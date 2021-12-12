@@ -7,7 +7,7 @@ const Avatar: FC<{ user?: User } & HTMLAttributes<HTMLElement>> = ({ user, class
   if (!user?.avatar_url) {
     return <div className={`rounded-full bg-yellow-200 text-white ${defaultClassName} ${className}`}>{user?.full_name.at(0) ?? '?'}</div>
   }
-  return <img src={user?.avatar_url} className={`rounded-full ${defaultClassName} ${className}`} />
+  return <img src={user?.avatar_url} loading='lazy' className={`rounded-full ${defaultClassName} ${className}`} />
 }
 
 export default Avatar

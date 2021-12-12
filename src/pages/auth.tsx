@@ -1,4 +1,4 @@
-import { useSetProfileState, useTokenState } from '../recoil/profile'
+import { getLocationFrom, useSetProfileState, useTokenState } from '../recoil/profile'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { Client, mixinRequest } from 'mixin-node-sdk'
@@ -19,12 +19,15 @@ const Auth = () => {
   const code = params.get('code')
 
   useEffect(() => {
-    const navigateBack = () => {
-      const from = location.state?.from?.pathname || '/'
+    const navigateBack = async () => {
+      const from = await getLocationFrom() || location.state?.from?.pathname || '/'
       return navigate(from, { replace: true })
     }
 
-    if (!!token) return navigateBack()
+    if (!!token) {
+      navigateBack()
+      return
+    }
     if (!code) return
 
     const resetAuth = () => navigate('/auth', { replace: true })

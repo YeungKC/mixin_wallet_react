@@ -2,11 +2,11 @@ import { useTranslation } from 'react-i18next'
 import Avatar from '../component/avatar'
 import { useProfileCurrencySymbolValue, useProfileValue } from '../recoil/profile'
 import { useSearchParams } from 'react-router-dom'
-import { assetSortType, useAssetResult } from '../service/hook'
-import { FC, HTMLAttributes, useMemo } from 'react'
+import { assetSortType, useAssetResults, useUpdateAssets } from '../service/hook'
+import { FC, HTMLAttributes, useEffect, useMemo } from 'react'
 import { AssetSchema } from '../store/database/entity/asset'
 import { bitcoin } from '../constant'
-import { bigAdd, bigDiv, bigGt, bigLt, bigMul, bigSub, formatCryptocurrency, formatCurrency, toRounding } from '../util/big'
+import { bigAdd, bigDiv, bigGt, bigLt, bigMul, bigSub, toRounding } from '../util/big'
 import { Cell, Pie, PieChart } from 'recharts'
 import IconButton from '../component/common/icon_button'
 
@@ -18,34 +18,39 @@ import amplitudeIncrease from '../assets/amplitude_increase.svg'
 import amplitudeDecrease from '../assets/amplitude_decrease.svg'
 import Button from '../component/common/button'
 import AssetIcon from '../component/asset_icon'
+import FormatNumber from '../component/common/format_number'
+import AppBar from '../component/app_bar'
+import ActionBarButton from '../component/action_bar_button'
+import { LoadingPage } from './loading'
 
 const Home = () => {
-  const [params] = useSearchParams()
-  const sortValue = params.get('sort')
-  const sort = useMemo(() => {
-    if (sortValue === 'amount' || sortValue === 'increase' || sortValue === 'decrease')
-      return sortValue
-    return undefined
-  }, [sortValue])
+  const { data, isLoading } = useAssetResults()
+  const { mutate, isLoading: updating } = useUpdateAssets()
+  useEffect(() => {
+    mutate()
+  }, [mutate])
+
+  if (isLoading || (updating && !data?.length)) return <LoadingPage />
+
   return (
     <div className="container flex flex-col items-center">
-      <Bar />
+      <_Bar />
       <Balance className="mb-6" />
-      <Chart className="mb-8" />
-      <ActionBar className="mb-8" />
-      <List sort={sort} />
+      <Chart className="mb-6" />
+      <ActionBar className="mb-6" />
+      <List />
     </div>
   )
 }
 
-const Bar = () => {
+const _Bar = () => {
   const [t] = useTranslation()
   return (
-    <div className="w-full h-6 p-4 my-2 flex flex-row items-center mb-5">
-      <CurrentUserAvatar />
-      <p className="font-semibold">{t('mixinWallet')}</p>
-      <IconButton to="/setting" src={setting} className="ml-auto mr-28" />
-    </div>
+    <AppBar
+      leading={<CurrentUserAvatar />}
+      title={<>{t('mixinWallet')}</>}
+      trailing={<IconButton to="/setting" src={setting} />}
+    />
   )
 }
 
@@ -56,38 +61,31 @@ const CurrentUserAvatar = () => {
 
 
 const Balance: FC<HTMLAttributes<HTMLAnchorElement>> = ({ className }) => {
-  const { data = [] } = useAssetResult()
+  const { data = [] } = useAssetResults()
   const symbol = useProfileCurrencySymbolValue()
   const bitcoinAsset = useMemo(() => data.find(({ asset_id }) => asset_id === bitcoin), [data])
   const balance = useMemo(
-    () => {
-      const result = data.reduce(
-        (prev, { balance, price_usd, fiat }) => bigAdd(prev, bigMul(balance, price_usd, fiat?.rate ?? 0)),
-        '0'
-      )
-      return formatCurrency(result)
-    },
+    () => data.reduce(
+      (prev, { balance, price_usd, fiat }) => bigAdd(prev, bigMul(balance, price_usd, fiat?.rate ?? 0)),
+      '0'
+    ),
     [data]
   )
   const balanceOfBtc = useMemo(() => {
-    let result: string
     if (!bitcoinAsset) {
-      result = data.reduce((prev, { balance, price_btc }) => bigAdd(prev, bigMul(balance, price_btc)), '0')
+      return data.reduce((prev, { balance, price_btc }) => bigAdd(prev, bigMul(balance, price_btc)), '0')
     } else {
-      result = bigDiv(balance, bitcoinAsset.fiat!.rate, bitcoinAsset.price_usd)
+      return bigDiv(balance, bitcoinAsset.fiat!.rate, bitcoinAsset.price_usd)
     }
-    return formatCryptocurrency(result)
   }, [bitcoinAsset, balance, data])
 
   return (
     <div className={`flex flex-col gap-y-1 items-center ${className}`}>
-      <div className="flex flex-row">
+      <div className="flex flex-row justify-center items-center flex-wrap">
         <div className="self-start mt-1">{symbol}</div>
-        <div className="text-3xl font-semibold">{balance}</div>
+        <FormatNumber className="text-3xl font-semibold break-all text-center" value={balance} precision={'fiat'} />
       </div>
-      <div className="flex flex-col text-xs font-semibold text-gray-400">
-        {balanceOfBtc} BTC
-      </div>
+      <FormatNumber className="flex flex-col text-xs font-semibold text-gray-400" value={balanceOfBtc} precision={'crypto'} trailing=' BTC' />
     </div>
   )
 }
@@ -96,7 +94,7 @@ const COLORS = ['#FC9E1F', '#FFCA3E', '#5278FF', '#DFE1E5']
 const Chart: FC<HTMLAttributes<HTMLAnchorElement>> = ({ className }) => {
   const [t] = useTranslation()
 
-  const { data = [], isLoading } = useAssetResult()
+  const { data = [], isLoading } = useAssetResults()
   const simpleData = useMemo(() => data.map(({ symbol, balance, price_usd }) => ({
     name: symbol,
     value: bigMul(balance, price_usd),
@@ -121,7 +119,7 @@ const Chart: FC<HTMLAttributes<HTMLAnchorElement>> = ({ className }) => {
 
     let totalPercent = 100
     result.forEach((e, index) => {
-      if (index === 3) return e.value = totalPercent
+      if (index === 3) return e.value = Number(toRounding(totalPercent, 1))
       totalPercent -= e.value
     })
 
@@ -185,18 +183,16 @@ const ActionBar: FC<HTMLAttributes<HTMLDivElement>> = ({ className }) => {
   )
 }
 
-const ActionBarButton: FC<{ name: string } & HTMLAttributes<HTMLAnchorElement>> = ({ name, className, onClick }) => {
-  return <Button
-    to={{}}
-    className={`flex-1 bg-gray-100 font-medium text-sm py-2 outline-none ${className}`}
-    onClick={onClick}
-  >
-    {name}
-  </Button>
-}
+const List: FC = () => {
+  const [params] = useSearchParams()
+  const sortValue = params.get('sort')
+  const sort = useMemo(() => {
+    if (sortValue === 'amount' || sortValue === 'increase' || sortValue === 'decrease')
+      return sortValue
+    return undefined
+  }, [sortValue])
 
-const List: FC<{ sort?: typeof assetSortType }> = ({ sort }) => {
-  const { data = [], } = useAssetResult({ sort: sort })
+  const { data = [] } = useAssetResults({ sort: sort })
 
   return <div className="w-full flex flex-col">
     <ListHeader sort={sort} />
@@ -239,19 +235,16 @@ const ListHeader: FC<{ sort?: typeof assetSortType }> = ({ sort }) => {
 }
 
 const ListItem: FC<{ asset: AssetSchema }> = ({ asset }) => {
-  const cryptocurrency = useMemo(() => formatCryptocurrency(asset.balance), [asset.balance])
-  const currency = useMemo(() => formatCurrency(bigMul(asset.balance, asset.price_usd, asset.fiat?.rate ?? 0)), [asset.balance, asset.price_usd, asset.fiat?.rate])
+  const currency = useMemo(() => bigMul(asset.balance, asset.price_usd, asset.fiat?.rate ?? 0), [asset.balance, asset.price_usd, asset.fiat?.rate])
   const symbol = useProfileCurrencySymbolValue()
-  return <Button to={{}} onClick={() => { }} className="h-[72px] p-4 w-full flex gap-3">
+  return <Button to={`/asset/${asset.asset_id}`} className="h-[72px] p-4 w-full flex gap-3">
     <AssetIcon asset={asset} className="flex-shrink-0" />
-    <div className="flex-grow flex-shrink flex flex-col justify-between overflow-hidden overflow-ellipsis">
+    <div className="flex-grow flex flex-col justify-between overflow-hidden overflow-ellipsis">
       <div className="flex font-semibold text-sm gap-1 whitespace-nowrap">
-        <div className="overflow-hidden overflow-ellipsis">
-          {cryptocurrency}
-        </div>
+        <FormatNumber className='overflow-hidden overflow-ellipsis' value={asset.balance} precision={'crypto'} />
         {asset.symbol}
       </div>
-      <div className="text-xs text-gray-300">{symbol}{currency}</div>
+      <FormatNumber className='text-xs text-gray-300' value={currency} precision={'fiat'} leading={symbol} />
     </div>
     <AssetPrice asset={asset} className="" />
   </Button>
@@ -265,9 +258,9 @@ const AssetPrice: FC<{ asset: AssetSchema } & HTMLAttributes<HTMLAnchorElement>>
 
   const unitPrice = useMemo(() => {
     if (!valid) return 0
-    return formatCurrency(bigMul(asset.price_usd, asset.fiat?.rate ?? 0))
+    return bigMul(asset.price_usd, asset.fiat?.rate ?? 0)
   }, [valid, asset.price_usd, asset.fiat?.rate])
-  const changeUsd = useMemo(() => toRounding(bigMul(asset.change_usd, 100), 2), [asset.change_usd])
+  const changeUsd = useMemo(() => bigMul(asset.change_usd, 100), [asset.change_usd])
 
 
   const [t] = useTranslation()
@@ -277,10 +270,8 @@ const AssetPrice: FC<{ asset: AssetSchema } & HTMLAttributes<HTMLAnchorElement>>
   return (
     <div className={`${isNegative ? "text-red-500" : "text-green-500"} ${className}`}>
       <div className="flex flex-col justify-between text-xs items-end">
-        {changeUsd}%
-        <div className="text-gray-300">
-          {symbol}{unitPrice}
-        </div>
+        <FormatNumber value={changeUsd} precision={2} trailing='%' />
+        <FormatNumber className="text-gray-300" value={unitPrice} precision={2} leading={symbol} />
       </div>
     </div>
   )

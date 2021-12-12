@@ -142,5 +142,8 @@
   "selectContactOrAddress": "Choose a address or contact",
   "depositMemoNotice": "Memo is required, or you will lose your coins.",
   "requiredPermissions": "Required permissions",
-  "somethingWrong": "Something wrong, please try again"
+  "somethingWrong": "Something wrong, please try again",
+  "updating": "Updating",
+  "updatedSuccessfully": "Updated successfully",
+  "updatedFailed": "Updated failed"
 }

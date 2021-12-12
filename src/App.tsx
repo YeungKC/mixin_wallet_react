@@ -9,7 +9,6 @@ import 'react-toastify/dist/ReactToastify.css'
 import RequireAuthAndDatabase from './component/require_auth_and_database'
 import 'reflect-metadata'
 import RecoilNexus from "recoil-nexus"
-import UpdateAssets from './component/service/update_assets'
 import { QueryClientProvider } from 'react-query'
 import { queryClient } from './service/service'
 import UpdateProfile from './component/service/update_profile'
@@ -27,6 +26,8 @@ const Providers: FC = ({ children }) => {
 
 const Auth = lazy(() => import('./pages/auth'))
 const Home = lazy(() => import('./pages/home'))
+const AssetDetail = lazy(() => import('./pages/asset_detail'))
+
 function Content() {
   return (
     <div>
@@ -35,6 +36,14 @@ function Content() {
         <Routes>
           <Route path="/auth" element={<Auth />} />
           <Route
+            path="/asset/:assetId"
+            element={
+              <RequireAuthAndDatabase>
+                <AssetDetail />
+              </RequireAuthAndDatabase>
+            }
+          />
+          <Route
             path="/"
             element={
               <RequireAuthAndDatabase>
@@ -42,6 +51,7 @@ function Content() {
               </RequireAuthAndDatabase>
             }
           />
+
         </Routes>
       </Suspense>
     </div>

@@ -1,5 +1,6 @@
 import { User } from 'mixin-node-sdk/dist/types'
 import { selector, useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
+import { getRecoilPromise, setRecoil } from 'recoil-nexus'
 import symbols from '../util/symbol'
 import { localStorageState } from './local_storage_state'
 
@@ -35,3 +36,11 @@ const profileCurrencySymbolState = selector({
 export const useProfileCurrencySymbolValue = () => useRecoilValue(profileCurrencySymbolState)
 
 
+// location from
+const locationFromState = localStorageState<string>('locationFrom')
+
+export const setLocationFrom = (location: string) => {
+    setRecoil(locationFromState, location)
+}
+
+export const getLocationFrom = () => getRecoilPromise(locationFromState)

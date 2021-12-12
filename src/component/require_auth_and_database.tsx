@@ -1,9 +1,8 @@
 import { FC, Suspense } from "react"
 import { useSearchParams, useLocation, Navigate } from "react-router-dom"
 import { LoadingPage } from "../pages/loading"
-import { useHasTokenValue } from "../recoil/profile"
+import { setLocationFrom, useHasTokenValue } from "../recoil/profile"
 import DatabaseInit from "./database_init"
-import UpdateAssets from "./service/update_assets"
 
 const RequireAuthAndDatabase: FC = ({ children }) => {
   const hasToken = useHasTokenValue()
@@ -11,16 +10,16 @@ const RequireAuthAndDatabase: FC = ({ children }) => {
   const location = useLocation()
 
   if (!hasToken) {
+    setLocationFrom(`${location.pathname}${location.search}`)
     return <Navigate to={`/auth?${params.toString()}`} state={{ from: location }} replace />
   }
 
   return (
-    <Suspense fallback={<LoadingPage />}>
-      <DatabaseInit>
-        <UpdateAssets />
+    <DatabaseInit>
+      <Suspense fallback={<LoadingPage />}>
         {children}
-      </DatabaseInit>
-    </Suspense>
+      </Suspense>
+    </DatabaseInit>
   )
 }
 

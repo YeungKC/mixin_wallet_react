@@ -139,5 +139,8 @@
   "selectContactOrAddress": "选择地址或联系人",
   "depositMemoNotice": "提币时务必填写 Memo(备注)，否则您会丢失您的数字币",
   "requiredPermissions": "权限不足",
-  "somethingWrong": "出错了，请重试"
+  "somethingWrong": "出错了，请重试",
+  "updating": "更新中",
+  "updatedSuccessfully": "更新成功",
+  "updatedFailed": "更新失败"
 }

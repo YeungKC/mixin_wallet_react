@@ -1,8 +1,11 @@
-import { Snapshot } from "mixin-node-sdk/dist/types";
-import { EntitySchema } from "typeorm";
+import { Asset, ExchangeRate, Snapshot, User } from "mixin-node-sdk/dist/types"
+import { EntitySchema } from "typeorm"
 
 export interface SnapshotSchema extends Snapshot {
   confirmations?: number
+  opponenter?: User
+  asset?: Asset
+  fiat?: ExchangeRate
 }
 
 export const SnaphostEntity = new EntitySchema<SnapshotSchema>({
@@ -15,7 +18,7 @@ export const SnaphostEntity = new EntitySchema<SnapshotSchema>({
     asset_id: { type: String, nullable: true },
     created_at: { type: String },
     opponent_id: { type: String, nullable: true },
-    source: { type: String },
+    source: { type: String, nullable: true },
     amount: { type: String },
     memo: { type: String },
     chain_id: { type: String, nullable: true },
