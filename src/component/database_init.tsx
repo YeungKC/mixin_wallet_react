@@ -1,11 +1,6 @@
 import localforage from "localforage"
 import { FC, useEffect, useMemo, useState } from "react"
-import {
-  createConnection,
-  getConnection,
-  getManager,
-  getRepository,
-} from "typeorm"
+import { createConnection, getConnection } from "typeorm"
 import { LoadingPage } from "../pages/loading"
 import { AddressEntity } from "../store/database/entity/address"
 import { AssetEntity } from "../store/database/entity/asset"
@@ -13,7 +8,7 @@ import { AssetExtraEntity } from "../store/database/entity/asset_extra"
 import { FiatEntity } from "../store/database/entity/fiat"
 import { SnaphostEntity } from "../store/database/entity/snapshot"
 import { UserEntity } from "../store/database/entity/user"
-const initSqlJs = require("sql.js")
+const initSqlJs = require("sql.js") // eslint-disable-line @typescript-eslint/no-var-requires
 
 const isEnvProduction = process.env.NODE_ENV === "production"
 

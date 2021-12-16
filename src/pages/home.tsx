@@ -95,7 +95,11 @@ const Balance: FC<HTMLAttributes<HTMLAnchorElement>> = ({ className }) => {
         "0"
       )
     } else {
-      return bigDiv(balance, bitcoinAsset.fiat!.rate, bitcoinAsset.price_usd)
+      return bigDiv(
+        balance,
+        bitcoinAsset.fiat?.rate ?? 0,
+        bitcoinAsset.price_usd
+      )
     }
   }, [bitcoinAsset, balance, data])
 
@@ -303,7 +307,7 @@ const ListHeader: FC<{ sort?: typeof assetSortType }> = ({ sort }) => {
   return (
     <div className="w-full h-10 py-2 px-4 flex">
       <div className="font-semibold flex-1">{t("assets")}</div>
-      <IconButton to={{}} src={search} onClick={() => {}} />
+      <IconButton to={{}} src={search} />
       <Button to={{ search: `?sort=${next}` }}>
         <img src={amplitude} className="w-6 h-6" />
         <img src={iconSrc} className="w-[6px] h-[10px]" />

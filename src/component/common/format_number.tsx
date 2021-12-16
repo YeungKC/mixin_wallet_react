@@ -13,7 +13,7 @@ const FormatNumber: FC<
   FormatNumberProps & HTMLAttributes<HTMLAnchorElement>
 > = ({ value, precision, leading, trailing, className }) => {
   const text = useMemo(() => {
-    var _precision = 0
+    let _precision = 0
     switch (precision) {
       case "crypto":
         _precision = 8
@@ -28,9 +28,9 @@ const FormatNumber: FC<
   }, [value, precision])
   return (
     <p className={className}>
-      {!!leading ? leading : ""}
+      {leading ? leading : ""}
       {text}
-      {!!trailing ? trailing : ""}
+      {trailing ? trailing : ""}
     </p>
   )
 }

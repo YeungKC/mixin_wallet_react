@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useInfiniteQuery, useMutation, useQuery } from "react-query"
-import service, { queryClient } from "./service"
+import service from "./service"
 
 export declare const assetSortType:
   | "amount"

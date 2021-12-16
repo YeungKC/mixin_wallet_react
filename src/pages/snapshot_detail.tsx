@@ -1,5 +1,4 @@
 import dayjs from "dayjs"
-import { title } from "process"
 import { FC, HTMLAttributes, useEffect, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { useParams } from "react-router-dom"
@@ -19,10 +18,10 @@ import { LoadingPage } from "./loading"
 
 const SnapshotDetail = () => {
   const { snapshotId } = useParams()
-  const { data, isLoading } = useSnapshot(snapshotId!)
+  const { data, isLoading } = useSnapshot(snapshotId ?? "")
   const { mutate, isLoading: updating } = useUpdateAssetSnapshot()
   useEffect(() => {
-    mutate(snapshotId!)
+    mutate(snapshotId ?? "")
   }, [mutate, snapshotId])
 
   const { t } = useTranslation()
@@ -35,7 +34,7 @@ const SnapshotDetail = () => {
     <div className="container flex flex-col items-center pb-10">
       <AppBar leading={<BackButton />} title={t("transactions")} />
       <AssetIcon
-        assetIconUrl={data.asset!.icon_url}
+        assetIconUrl={data.asset?.icon_url ?? ""}
         chainIconUrl={data.chain?.icon_url}
         className="w-14 h-14 mt-6"
       />
@@ -102,7 +101,7 @@ const Value: FC<
         )}
         {tickerValueValid && (
           <FormatNumber
-            value={tickerValue!}
+            value={tickerValue!} // eslint-disable-line @typescript-eslint/no-non-null-assertion
             precision={"fiat"}
             leading={t("walletTransactionThatTimeValue") + symbol}
           />
@@ -157,7 +156,7 @@ const From: FC<{ data: SnapshotSchema }> = ({ data }) => {
       case "pending":
         sender = data.sender ?? ""
         break
-      case "transfer":
+      case "transfer": {
         const isPositive = bigGt(data.amount, 0)
         if (isPositive) {
           sender = data.opponent?.full_name ?? ""
@@ -165,6 +164,7 @@ const From: FC<{ data: SnapshotSchema }> = ({ data }) => {
           sender = profile?.full_name ?? ""
         }
         break
+      }
       default:
         sender = data.transaction_hash ?? ""
         title = t("transactionHash")
@@ -197,7 +197,7 @@ const To: FC<{ data: SnapshotSchema }> = ({ data }) => {
         receiver = data.transaction_hash ?? ""
         title = t("transactionHash")
         break
-      case "transfer":
+      case "transfer": {
         const isPositive = bigGt(data.amount, 0)
         if (!isPositive) {
           receiver = data.opponent?.full_name ?? ""
@@ -205,6 +205,7 @@ const To: FC<{ data: SnapshotSchema }> = ({ data }) => {
           receiver = profile?.full_name ?? ""
         }
         break
+      }
       default:
         receiver = data.receiver ?? ""
         if (data.asset?.tag.length) {

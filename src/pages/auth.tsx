@@ -4,7 +4,7 @@ import {
   useTokenState,
 } from "../recoil/profile"
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { Client, mixinRequest } from "mixin-node-sdk"
 import { LoadingPage } from "./loading"
 import authBackground from "../assets/auth_background.webp"
@@ -29,7 +29,7 @@ const Auth = () => {
       return navigate(from, { replace: true })
     }
 
-    if (!!token) {
+    if (token) {
       navigateBack()
       return
     }
@@ -40,8 +40,11 @@ const Auth = () => {
     const login = async (code: string) => {
       try {
         const { access_token, scope } = await mixinRequest.post<
-          any,
-          { access_token: string; scope: string }
+          undefined,
+          {
+            access_token: string
+            scope: string
+          }
         >("/oauth/token", {
           client_id: process.env.REACT_APP_CLIENT_ID,
           client_secret: process.env.REACT_APP_CLIENT_SECRET,
@@ -78,7 +81,7 @@ const Auth = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [code])
 
-  if (!!code) return <LoadingPage />
+  if (code) return <LoadingPage />
 
   return <_Auth />
 }

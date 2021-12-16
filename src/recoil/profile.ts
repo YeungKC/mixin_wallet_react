@@ -35,6 +35,7 @@ export const useProfileCurrencyValue = () =>
 
 const profileCurrencySymbolState = selector({
   key: "profileCurrencySymbol",
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   get: ({ get }) => (symbols as any)[get(profileCurrencyState)] ?? "$",
 })
 

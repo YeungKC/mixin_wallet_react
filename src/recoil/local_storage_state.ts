@@ -4,8 +4,8 @@ const localStorageEffect: <T>(key: string) => AtomEffect<T> =
   (key: string) =>
   ({ setSelf, onSet }) => {
     const savedValue = localStorage.getItem(key)
-    if (!!savedValue) {
-      let value: any | string
+    if (savedValue) {
+      let value: any | string // eslint-disable-line @typescript-eslint/no-explicit-any
       try {
         value = JSON.parse(savedValue)
       } catch (_) {

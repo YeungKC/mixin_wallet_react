@@ -24,10 +24,10 @@ import dayjs from "dayjs"
 
 const AssetDetail = () => {
   const { assetId } = useParams()
-  const { data, isLoading } = useAsset(assetId!)
+  const { data, isLoading } = useAsset(assetId ?? "")
   const { mutate, isLoading: updating } = useUpdateAsset()
   useEffect(() => {
-    mutate(assetId!)
+    mutate(assetId ?? "")
   }, [mutate, assetId])
 
   if (isLoading || (updating && !data)) {
@@ -96,8 +96,8 @@ const ActionBar: FC<HTMLAttributes<HTMLDivElement>> = ({ className }) => {
 
 const ListAsset = () => {
   const { assetId } = useParams()
-  const { data, fetchNextPage, hasNextPage } = useSnapshotsAndUpdate({
-    assetId: assetId!,
+  const { data, fetchNextPage } = useSnapshotsAndUpdate({
+    assetId: assetId ?? "",
   })
 
   const list = data?.pages?.reduce((p, c) => p.concat(c), []) ?? []
@@ -139,7 +139,7 @@ const ListItem: FC<{ data: SnapshotSchema }> = ({ data }) => {
             isPositive ? "text-green-500" : "text-red-500"
           }`}
         />
-        <p>{data.asset!.symbol}</p>
+        <p>{data.asset?.symbol}</p>
       </div>
     </Button>
   )

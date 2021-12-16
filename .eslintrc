@@ -1,9 +1,15 @@
 {
-  "extends": ["plugin:prettier/recommended"],
-  "plugins": ["react-hooks"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended"
+  ],
+  "plugins": ["react-hooks", "@typescript-eslint"],
   "rules": {
     "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "error"
+    "react-hooks/exhaustive-deps": "error",
+    "@typescript-eslint/explicit-module-boundary-types": "off"
   },
   "parser": "@typescript-eslint/parser",
   "parserOptions": {

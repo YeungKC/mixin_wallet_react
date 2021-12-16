@@ -9,7 +9,7 @@ import {
   SelectQueryBuilder,
 } from "typeorm"
 
-import { profileState, tokenState, useProfileState } from "../recoil/profile"
+import { profileState, tokenState } from "../recoil/profile"
 import { AssetEntity, AssetSchema } from "../store/database/entity/asset"
 import { FiatEntity } from "../store/database/entity/fiat"
 import {
@@ -19,18 +19,19 @@ import {
 import { UserEntity } from "../store/database/entity/user"
 
 class Service {
-  constructor() {}
   private _client?: Client
   private token?: string
 
   private get client(): Client {
     const _token = getRecoil(tokenState)
 
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     if (this.token === _token) return this._client!
 
     this.token = _token
     this._client = new Client(undefined, this.token)
     this._client.request.interceptors.response.use((data) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const rawData = data as any
       if (rawData.code) {
         if (rawData.code === 401) {
@@ -97,6 +98,7 @@ class Service {
     ])
 
     const insertUsers = await this._checkUsersExistWithReturnInsert(
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       list.filter((a) => a.opponent_id).map((s) => s.opponent_id!)
     )
 
@@ -119,6 +121,7 @@ class Service {
       this._checkUsersExistWithReturnInsert(
         [snapshot.opponent_id, snapshot.user_id]
           .filter((e) => !!e)
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           .map((e) => e!)
       ),
     ])

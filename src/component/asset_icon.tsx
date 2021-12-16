@@ -1,5 +1,4 @@
 import { FC, HTMLAttributes } from "react"
-import { AssetSchema } from "../store/database/entity/asset"
 
 const AssetIcon: FC<
   {

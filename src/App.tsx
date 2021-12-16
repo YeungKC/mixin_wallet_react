@@ -1,6 +1,6 @@
 import "./i18n"
 import { RecoilRoot } from "recoil"
-import { FC, lazy, Suspense, useEffect } from "react"
+import { FC, lazy, Suspense } from "react"
 import { HashRouter, Routes, Route } from "react-router-dom"
 import { LoadingPage } from "./pages/loading"
 import { ToastContainer } from "react-toastify"
