@@ -1,8 +1,8 @@
-import { User } from "mixin-node-sdk/dist/types";
-import { EntitySchema } from 'typeorm'
+import { User } from "mixin-node-sdk/dist/types"
+import { EntitySchema } from "typeorm"
 
 export const UserEntity = new EntitySchema<User>({
-  name: 'user',
+  name: "user",
   columns: {
     user_id: { type: String, primary: true },
     identity_number: { type: String },

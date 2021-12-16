@@ -6,17 +6,39 @@ import transactionDeposit from "../assets/transaction_deposit.svg"
 import transactionWithdrawal from "../assets/transaction_withdrawal.svg"
 import transactionNet from "../assets/transaction_net.svg"
 
-const TransactionIcon: FC<{ data: SnapshotSchema } & HTMLAttributes<HTMLAnchorElement>> = ({ data, className }) => {
-    switch (data.type) {
-        case 'transfer':
-            return <Avatar user={data.opponenter} className={`w-11 h-11 ${className}`} />
-        case 'deposit':
-            return <img src={transactionDeposit} loading="lazy" className={`rounded-full w-11 h-11 ${className}`} />
-        case 'withdrawal':
-            return <img src={transactionWithdrawal} loading="lazy" className={`rounded-full w-11 h-11 ${className}`} />
-        default:
-            return <img src={transactionNet} loading="lazy" className={`rounded-full w-11 h-11 ${className}`} />
-    }
+const TransactionIcon: FC<
+  { data: SnapshotSchema } & HTMLAttributes<HTMLAnchorElement>
+> = ({ data, className }) => {
+  switch (data.type) {
+    case "transfer":
+      return (
+        <Avatar user={data.opponent} className={`w-10 h-10 ${className}`} />
+      )
+    case "deposit":
+      return (
+        <img
+          src={transactionDeposit}
+          loading="lazy"
+          className={`rounded-full w-10 h-10 ${className}`}
+        />
+      )
+    case "withdrawal":
+      return (
+        <img
+          src={transactionWithdrawal}
+          loading="lazy"
+          className={`rounded-full w-10 h-10 ${className}`}
+        />
+      )
+    default:
+      return (
+        <img
+          src={transactionNet}
+          loading="lazy"
+          className={`rounded-full w-10 h-10 ${className}`}
+        />
+      )
+  }
 }
 
 export default TransactionIcon

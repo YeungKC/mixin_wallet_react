@@ -1,17 +1,16 @@
-
-import './i18n'
-import { RecoilRoot } from 'recoil'
-import { FC, lazy, Suspense } from 'react'
-import { HashRouter, Routes, Route } from 'react-router-dom'
-import { LoadingPage } from './pages/loading'
-import { ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
-import RequireAuthAndDatabase from './component/require_auth_and_database'
-import 'reflect-metadata'
+import "./i18n"
+import { RecoilRoot } from "recoil"
+import { FC, lazy, Suspense, useEffect } from "react"
+import { HashRouter, Routes, Route } from "react-router-dom"
+import { LoadingPage } from "./pages/loading"
+import { ToastContainer } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
+import RequireAuthAndDatabase from "./component/require_auth_and_database"
+import "reflect-metadata"
 import RecoilNexus from "recoil-nexus"
-import { QueryClientProvider } from 'react-query'
-import { queryClient } from './service/service'
-import UpdateProfile from './component/service/update_profile'
+import { QueryClientProvider } from "react-query"
+import { queryClient } from "./service/service"
+import UpdateProfile from "./component/service/update_profile"
 
 const Providers: FC = ({ children }) => {
   return (
@@ -24,9 +23,10 @@ const Providers: FC = ({ children }) => {
   )
 }
 
-const Auth = lazy(() => import('./pages/auth'))
-const Home = lazy(() => import('./pages/home'))
-const AssetDetail = lazy(() => import('./pages/asset_detail'))
+const Auth = lazy(() => import("./pages/auth"))
+const Home = lazy(() => import("./pages/home"))
+const AssetDetail = lazy(() => import("./pages/asset_detail"))
+const SnapshotDetail = lazy(() => import("./pages/snapshot_detail"))
 
 function Content() {
   return (
@@ -35,6 +35,14 @@ function Content() {
       <Suspense fallback={<LoadingPage />}>
         <Routes>
           <Route path="/auth" element={<Auth />} />
+          <Route
+            path="/snapshot/:snapshotId"
+            element={
+              <RequireAuthAndDatabase>
+                <SnapshotDetail />
+              </RequireAuthAndDatabase>
+            }
+          />
           <Route
             path="/asset/:assetId"
             element={
@@ -51,7 +59,6 @@ function Content() {
               </RequireAuthAndDatabase>
             }
           />
-
         </Routes>
       </Suspense>
     </div>
@@ -64,7 +71,17 @@ function App() {
       <Providers>
         <Content />
       </Providers>
-      <ToastContainer position="top-center" autoClose={2000} hideProgressBar newestOnTop closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </>
   )
 }

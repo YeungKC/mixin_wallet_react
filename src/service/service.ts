@@ -1,17 +1,25 @@
-import { Client } from 'mixin-node-sdk'
-import { User } from 'mixin-node-sdk/dist/types'
-import { QueryClient } from 'react-query'
-import { getRecoil, setRecoil } from 'recoil-nexus'
-import { Connection, EntityManager, getConnection, SelectQueryBuilder } from 'typeorm'
-import { profileState, tokenState, useProfileState } from '../recoil/profile'
-import { AssetEntity, AssetSchema } from '../store/database/entity/asset'
-import { FiatEntity } from '../store/database/entity/fiat'
-import { SnaphostEntity, SnapshotSchema } from '../store/database/entity/snapshot'
-import { UserEntity } from '../store/database/entity/user'
+import { Client } from "mixin-node-sdk"
+import { User } from "mixin-node-sdk/dist/types"
+import { QueryClient } from "react-query"
+import { getRecoil, setRecoil } from "recoil-nexus"
+import {
+  Connection,
+  EntityManager,
+  getConnection,
+  SelectQueryBuilder,
+} from "typeorm"
+
+import { profileState, tokenState, useProfileState } from "../recoil/profile"
+import { AssetEntity, AssetSchema } from "../store/database/entity/asset"
+import { FiatEntity } from "../store/database/entity/fiat"
+import {
+  SnaphostEntity,
+  SnapshotSchema,
+} from "../store/database/entity/snapshot"
+import { UserEntity } from "../store/database/entity/user"
 
 class Service {
-
-  constructor() { }
+  constructor() {}
   private _client?: Client
   private token?: string
 
@@ -50,20 +58,36 @@ class Service {
   }
 
   async updateAssets() {
-    const [assets, fiats] = await Promise.all([this.client.readAssets(), this.client.readExchangeRates()])
+    const [assets, fiats] = await Promise.all([
+      this.client.readAssets(),
+      this.client.readExchangeRates(),
+    ])
     await this.database.transaction(async (manager) => {
-      await manager.createQueryBuilder().update(AssetEntity).set({ balance: '0.0' }).execute()
+      await manager
+        .createQueryBuilder()
+        .update(AssetEntity)
+        .set({ balance: "0.0" })
+        .execute()
       await manager.save(AssetEntity, assets)
       await manager.save(FiatEntity, fiats)
     })
+
+    queryClient.invalidateQueries("asset")
+    queryClient.invalidateQueries("fiat")
   }
 
   async updateAsset(assetId: string) {
-    const [assets, fiats] = await Promise.all([this.client.readAsset(assetId), this.client.readExchangeRates()])
+    const [assets, fiats] = await Promise.all([
+      this.client.readAsset(assetId),
+      this.client.readExchangeRates(),
+    ])
     await this.database.transaction(async (manager) => {
       await manager.save(AssetEntity, assets)
       await manager.save(FiatEntity, fiats)
     })
+
+    queryClient.invalidateQueries("asset")
+    queryClient.invalidateQueries("fiat")
   }
 
   async updateAssetSnapshots(assetId: string, offset?: string, limit = 30) {
@@ -78,47 +102,126 @@ class Service {
 
     await this.database.transaction(async (manager) => {
       await manager.save(SnaphostEntity, list)
-      insertAsset && await insertAsset(manager)
-      insertUsers && await insertUsers(manager)
+      insertAsset && (await insertAsset(manager))
+      insertUsers && (await insertUsers(manager))
     })
 
-    queryClient.invalidateQueries('snapshot')
-    insertAsset && queryClient.invalidateQueries('asset')
-    insertUsers && queryClient.invalidateQueries('user')
+    queryClient.invalidateQueries("snapshot")
+    insertAsset && queryClient.invalidateQueries("asset")
+    insertUsers && queryClient.invalidateQueries("user")
+  }
+
+  async updateSnapshot(snapshotId: string) {
+    const snapshot = await this.client.readSnapshot(snapshotId)
+
+    const [insertAsset, insertUsers] = await Promise.all([
+      this._checkAssetExistWithReturnInsert(snapshot.asset_id),
+      this._checkUsersExistWithReturnInsert(
+        [snapshot.opponent_id, snapshot.user_id]
+          .filter((e) => !!e)
+          .map((e) => e!)
+      ),
+    ])
+
+    await this.database.transaction(async (manager) => {
+      await manager.save(SnaphostEntity, snapshot)
+      insertAsset && (await insertAsset(manager))
+      insertUsers && (await insertUsers(manager))
+    })
+
+    queryClient.invalidateQueries("snapshot")
+    insertAsset && queryClient.invalidateQueries("asset")
+    insertUsers && queryClient.invalidateQueries("user")
   }
 
   assetResults(currentFiat?: string): SelectQueryBuilder<AssetSchema> {
-    const _currentFiat = currentFiat ?? this.profile?.fiat_currency ?? 'USD'
+    const _currentFiat = currentFiat ?? this.profile?.fiat_currency ?? "USD"
     return this.database
-      .createQueryBuilder(AssetEntity, 'asset')
+      .createQueryBuilder(AssetEntity, "asset")
       .select()
-      .leftJoinAndMapOne('asset.chain', 'asset', 'chain', 'chain.asset_id = asset.chain_id')
-      .leftJoinAndMapOne('asset.extra', 'asset_extra', 'extra', 'extra.asset_id = asset.asset_id')
-      .innerJoinAndMapOne('asset.fiat', 'fiat', 'fiat', `fiat.code = :currentFiat`, { currentFiat: _currentFiat })
+      .leftJoinAndMapOne(
+        "asset.chain",
+        "asset",
+        "chain",
+        "chain.asset_id = asset.chain_id"
+      )
+      .leftJoinAndMapOne(
+        "asset.extra",
+        "asset_extra",
+        "extra",
+        "extra.asset_id = asset.asset_id"
+      )
+      .innerJoinAndMapOne(
+        "asset.fiat",
+        "fiat",
+        "fiat",
+        "fiat.code = :currentFiat",
+        { currentFiat: _currentFiat }
+      )
   }
 
   snapshotResults(currentFiat?: string): SelectQueryBuilder<SnapshotSchema> {
-    const _currentFiat = currentFiat ?? this.profile?.fiat_currency ?? 'USD'
+    const _currentFiat = currentFiat ?? this.profile?.fiat_currency ?? "USD"
     return this.database
-      .createQueryBuilder(SnaphostEntity, 'snapshot')
+      .createQueryBuilder(SnaphostEntity, "snapshot")
       .select()
-      .leftJoinAndMapOne('snapshot.asset', 'asset', 'asset', 'asset.asset_id = snapshot.asset_id')
-      .leftJoinAndMapOne('snapshot.opponenter', 'user', 'opponenter', 'opponenter.user_id = snapshot.opponent_id')
-      .innerJoinAndMapOne('snapshot.fiat', 'fiat', 'fiat', `fiat.code = :currentFiat`, { currentFiat: _currentFiat })
+      .leftJoinAndMapOne(
+        "snapshot.asset",
+        "asset",
+        "asset",
+        "asset.asset_id = snapshot.asset_id"
+      )
+      .leftJoinAndMapOne(
+        "snapshot.chain",
+        "asset",
+        "chain",
+        "chain.asset_id = asset.chain_id"
+      )
+      .leftJoinAndMapOne(
+        "snapshot.opponent",
+        "user",
+        "opponent",
+        "opponent.user_id = snapshot.opponent_id"
+      )
+      .innerJoinAndMapOne(
+        "snapshot.fiat",
+        "fiat",
+        "fiat",
+        "fiat.code = :currentFiat",
+        { currentFiat: _currentFiat }
+      )
   }
 
+  ticker(assetId: string, offset?: string) {
+    return this.client.readAssetNetworkTicker(assetId, offset)
+  }
 
   private async _checkAssetExistWithReturnInsert(assetId: string) {
-    if (await this.database
-      .createQueryBuilder(AssetEntity, 'asset')
-      .where('asset.asset_id = :assetId', { assetId })
+    const dbAsset = await this.database
+      .createQueryBuilder(AssetEntity, "asset")
+      .leftJoinAndMapOne(
+        "asset.chain",
+        "asset",
+        "chain",
+        "chain.asset_id = asset.chain_id"
+      )
+      .where("asset.asset_id = :assetId", { assetId })
       .limit(1)
-      .getOne()) {
-      return
-    }
+      .getOne()
 
-    const asset = await this.client.readAsset(assetId)
-    return (manager: EntityManager) => manager.save(AssetEntity, asset)
+    if (dbAsset && dbAsset.chain) return
+
+    const assetPromise = !dbAsset ? this.client.readAsset(assetId) : undefined
+    const chainPromise =
+      !dbAsset?.chain && dbAsset?.chain_id
+        ? this.client.readAsset(dbAsset.chain_id)
+        : undefined
+
+    const [asset, chain] = await Promise.all([assetPromise, chainPromise])
+    return (manager: EntityManager) => {
+      asset && manager.save(AssetEntity, asset)
+      chain && manager.save(AssetEntity, chain)
+    }
   }
 
   private async _checkUsersExistWithReturnInsert(userIds: string[]) {
@@ -126,12 +229,16 @@ class Service {
 
     const userIdSet = Array.from(new Set(userIds))
 
-    const existUserIds = (await this.database
-      .createQueryBuilder(UserEntity, 'user')
-      .where('user.user_id IN (:...userIdSet)', { userIdSet })
-      .getMany()).map((u) => u.user_id)
+    const existUserIds = (
+      await this.database
+        .createQueryBuilder(UserEntity, "user")
+        .where("user.user_id IN (:...userIdSet)", { userIdSet })
+        .getMany()
+    ).map((u) => u.user_id)
 
-    const userNeedFetch = userIdSet.filter((userId) => !existUserIds.includes(userId))
+    const userNeedFetch = userIdSet.filter(
+      (userId) => !existUserIds.includes(userId)
+    )
 
     if (userNeedFetch.length === 0) return
 
@@ -145,8 +252,8 @@ export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 100,
-    }
-  }
+    },
+  },
 })
 const service = new Service()
 export default service

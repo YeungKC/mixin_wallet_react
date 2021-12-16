@@ -3,13 +3,14 @@ import { EntitySchema } from "typeorm"
 
 export interface SnapshotSchema extends Snapshot {
   confirmations?: number
-  opponenter?: User
+  opponent?: User
   asset?: Asset
+  chain?: Asset
   fiat?: ExchangeRate
 }
 
 export const SnaphostEntity = new EntitySchema<SnapshotSchema>({
-  name: 'snapshot',
+  name: "snapshot",
   columns: {
     snapshot_id: { type: String, primary: true },
     type: { type: String },

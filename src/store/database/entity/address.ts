@@ -1,8 +1,8 @@
-import { Address } from 'mixin-node-sdk/dist/types/address'
-import { EntitySchema } from 'typeorm'
+import { Address } from "mixin-node-sdk/dist/types/address"
+import { EntitySchema } from "typeorm"
 
 export const AddressEntity = new EntitySchema<Address>({
-  name: 'address',
+  name: "address",
   columns: {
     type: { type: String, nullable: true },
     address_id: { type: String, primary: true },

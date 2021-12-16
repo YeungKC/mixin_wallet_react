@@ -1,6 +1,6 @@
-import { Asset, ExchangeRate } from 'mixin-node-sdk/dist/types/asset'
-import { EntitySchema } from 'typeorm'
-import { AssetExtra } from './asset_extra'
+import { Asset, ExchangeRate } from "mixin-node-sdk/dist/types/asset"
+import { EntitySchema } from "typeorm"
+import { AssetExtra } from "./asset_extra"
 
 export interface AssetSchema extends Asset {
   chain?: Asset
@@ -9,7 +9,7 @@ export interface AssetSchema extends Asset {
 }
 
 export const AssetEntity = new EntitySchema<AssetSchema>({
-  name: 'asset',
+  name: "asset",
   columns: {
     asset_id: { type: String, primary: true },
     chain_id: { type: String },

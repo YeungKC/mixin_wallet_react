@@ -11,14 +11,18 @@ const RequireAuthAndDatabase: FC = ({ children }) => {
 
   if (!hasToken) {
     setLocationFrom(`${location.pathname}${location.search}`)
-    return <Navigate to={`/auth?${params.toString()}`} state={{ from: location }} replace />
+    return (
+      <Navigate
+        to={`/auth?${params.toString()}`}
+        state={{ from: location }}
+        replace
+      />
+    )
   }
 
   return (
     <DatabaseInit>
-      <Suspense fallback={<LoadingPage />}>
-        {children}
-      </Suspense>
+      <Suspense fallback={<LoadingPage />}>{children}</Suspense>
     </DatabaseInit>
   )
 }
