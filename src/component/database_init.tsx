@@ -8,7 +8,9 @@ import { AssetExtraEntity } from "../store/database/entity/asset_extra"
 import { FiatEntity } from "../store/database/entity/fiat"
 import { SnaphostEntity } from "../store/database/entity/snapshot"
 import { UserEntity } from "../store/database/entity/user"
-const initSqlJs = require("sql.js") // eslint-disable-line @typescript-eslint/no-var-requires
+import sqlWasm from "./sql_wasm"
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const initSqlJs = require("sql.js")
 
 const isEnvProduction = process.env.NODE_ENV === "production"
 
@@ -35,9 +37,7 @@ const DatabaseInit: FC = ({ children }) => {
         await createConnection({
           type: "sqljs",
           autoSave: true,
-          driver: await initSqlJs({
-            locateFile: (file: string) => `static/wasm/${file}`,
-          }),
+          driver: await initSqlJs({ locateFile: () => sqlWasm }),
           useLocalForage: true,
           synchronize: true,
           location: "wallet",

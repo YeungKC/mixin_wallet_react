@@ -20,7 +20,7 @@ import { SnapshotSchema } from "../store/database/entity/snapshot"
 import Button from "../component/common/button"
 import TransactionType from "../component/transaction_type"
 import TransactionIcon from "../component/transaction_icon"
-import dayjs from "dayjs"
+import formatDate from "../util/format_date"
 
 const AssetDetail = () => {
   const { assetId } = useParams()
@@ -146,7 +146,7 @@ const ListItem: FC<{ data: SnapshotSchema }> = ({ data }) => {
 }
 
 const Date: FC<{ date: string }> = ({ date }) => {
-  const dateText = useMemo(() => dayjs(date).format("ll"), [date])
+  const dateText = useMemo(() => formatDate(date, "ll"), [date])
   return <>{dateText}</>
 }
 

@@ -1,4 +1,3 @@
-import dayjs from "dayjs"
 import { FC, HTMLAttributes, useEffect, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { useParams } from "react-router-dom"
@@ -14,6 +13,7 @@ import {
 import { useSnapshot, useTicker, useUpdateAssetSnapshot } from "../service/hook"
 import { SnapshotSchema } from "../store/database/entity/snapshot"
 import { bigAbs, bigGt, bigMul } from "../util/big"
+import formatDate from "../util/format_date"
 import { LoadingPage } from "./loading"
 
 const SnapshotDetail = () => {
@@ -116,7 +116,7 @@ const Detail: FC<
 > = ({ data, className }) => {
   const { t } = useTranslation()
   const dateText = useMemo(
-    () => dayjs(data.created_at).format("lll"),
+    () => formatDate(data.created_at, "lll"),
     [data.created_at]
   )
   return (
