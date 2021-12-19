@@ -19,7 +19,7 @@
     "i18next": "^21.5.3",
     "i18next-browser-languagedetector": "^6.1.2",
     "localforage": "^1.10.0",
-    "mixin-node-sdk": "file:../bot-api-nodejs-client",
+    "mixin-node-sdk": "^3.0.14",
     "postcss": "^7",
     "react": "^17.0.2",
     "react-aria": "^3.12.0",

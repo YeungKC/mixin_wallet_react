@@ -9162,8 +9162,10 @@ mixin-deep@^1.2.0:
     for-in "^1.0.2"
     is-extendable "^1.0.1"
 
-"mixin-node-sdk@file:../bot-api-nodejs-client":
+mixin-node-sdk@^3.0.14:
   version "3.0.14"
+  resolved "https://registry.yarnpkg.com/mixin-node-sdk/-/mixin-node-sdk-3.0.14.tgz#ba1876b794dcca42cdaa148c6de75eaeddb50fc8"
+  integrity sha512-ohwzUiTxeTZQtAUlJg89IwGgg9C/qDaZQ1CBCaqLDvomljikSouRdK7neJ1971kDDp9k4IjczpPUyZSTNwZjRQ==
   dependencies:
     "@types/axios" "^0.14.0"
     "@types/bignumber.js" "^5.0.0"
