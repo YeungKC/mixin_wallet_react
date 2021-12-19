@@ -1,4 +1,4 @@
-import { User } from "mixin-node-sdk/dist/types"
+import { User } from "mixin-node-sdk"
 import { FC, HTMLAttributes } from "react"
 
 const defaultClassName = "text-lg h-8 w-8"

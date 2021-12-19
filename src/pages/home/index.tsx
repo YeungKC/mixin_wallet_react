@@ -1,38 +1,34 @@
-import { FC, HTMLAttributes, useEffect, useMemo } from "react"
+import { FC, HTMLAttributes, lazy, Suspense, useEffect, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { useSearchParams } from "react-router-dom"
 import { Cell, Pie, PieChart } from "recharts"
 
-import amplitude from "../assets/amplitude.svg"
-import amplitudeDecrease from "../assets/amplitude_decrease.svg"
-import amplitudeIncrease from "../assets/amplitude_increase.svg"
-import amplitudeNone from "../assets/amplitude_none.svg"
-import search from "../assets/search.svg"
-import setting from "../assets/setting.svg"
-import ActionBarButton from "../component/action_bar_button"
-import AppBar from "../component/app_bar"
-import AssetIcon from "../component/asset_icon"
-import Avatar from "../component/avatar"
-import Button from "../component/common/button"
-import FormatNumber from "../component/common/format_number"
-import IconButton from "../component/common/icon_button"
-import { bitcoin } from "../constant"
+import amplitude from "../../assets/amplitude.svg"
+import amplitudeDecrease from "../../assets/amplitude_decrease.svg"
+import amplitudeIncrease from "../../assets/amplitude_increase.svg"
+import amplitudeNone from "../../assets/amplitude_none.svg"
+import search from "../../assets/search.svg"
+import setting from "../../assets/setting.svg"
+import ActionBarButton from "../../component/action_bar_button"
+import AppBar from "../../component/app_bar"
+import AssetIcon from "../../component/asset_icon"
+import Avatar from "../../component/avatar"
+import Button from "../../component/common/button"
+import FormatNumber from "../../component/common/format_number"
+import IconButton from "../../component/common/icon_button"
+import { bitcoin } from "../../constant"
 import {
   useProfileCurrencySymbolValue,
   useProfileValue,
-} from "../recoil/profile"
-import { assetSortType, useAssets, useUpdateAssets } from "../service/hook"
-import { AssetSchema } from "../store/database/entity/asset"
-import {
-  bigAdd,
-  bigDiv,
-  bigGt,
-  bigLt,
-  bigMul,
-  bigSub,
-  toRounding,
-} from "../util/big"
-import { LoadingPage } from "./loading"
+} from "../../recoil/profile"
+import { assetSortType, useAssets, useUpdateAssets } from "../../service/hook"
+import { AssetSchema } from "../../store/database/entity/asset"
+import { bigAdd, bigDiv, bigMul, bigSub, toRounding } from "../../util/big"
+import { LoadingPage } from "../loading"
+import { useSetQueryString } from "../../util/router"
+import AssetPriceAndChange from "../../component/asset_price_and_change"
+
+const SearchSheet = lazy(() => import("./search_sheet"))
 
 const Home = () => {
   const { data, isLoading } = useAssets()
@@ -45,13 +41,18 @@ const Home = () => {
   if (!data?.length) return <div>error</div>
 
   return (
-    <div className="container flex flex-col items-center">
-      <_Bar />
-      <Balance className="mb-6 mt-6" />
-      <Chart className="mb-6" />
-      <ActionBar className="mb-6" />
-      <List />
-    </div>
+    <>
+      <div className="container flex flex-col items-center">
+        <_Bar />
+        <Balance className="mb-6 mt-6" />
+        <Chart className="mb-6" />
+        <ActionBar className="mb-6" />
+        <List />
+      </div>
+      <Suspense fallback={null}>
+        <SearchSheet />
+      </Suspense>
+    </>
   )
 }
 
@@ -200,7 +201,7 @@ const Chart: FC<HTMLAttributes<HTMLAnchorElement>> = ({ className }) => {
         <div className="flex flex-col gap-y-3">
           {chartData.slice(0, 2).map(({ name, value }, index) => (
             <ChartItem
-              key={`chart-item-${index}`}
+              key={name}
               name={name}
               percent={value}
               color={COLORS[index]}
@@ -210,7 +211,7 @@ const Chart: FC<HTMLAttributes<HTMLAnchorElement>> = ({ className }) => {
         <div className="flex flex-col gap-y-3">
           {chartData.slice(2).map(({ name, value }, index) => (
             <ChartItem
-              key={`chart-item-${index}`}
+              key={name}
               name={name}
               percent={value}
               color={COLORS[index + 2]}
@@ -273,8 +274,8 @@ const List: FC = () => {
   return (
     <div className="w-full flex flex-col">
       <ListHeader sort={sort} />
-      {data.map((asset, index) => (
-        <ListItem key={`list-item-${index}`} asset={asset} />
+      {data.map((asset) => (
+        <ListItem key={asset.asset_id} asset={asset} />
       ))}
     </div>
   )
@@ -303,12 +304,16 @@ const ListHeader: FC<{ sort?: typeof assetSortType }> = ({ sort }) => {
         return amplitudeNone
     }
   }, [sort])
+
+  const nextQuery = useSetQueryString({ sort: next })
+  const openSearchSheet = useSetQueryString({ searchSheet: undefined })
+
   const [t] = useTranslation()
   return (
     <div className="w-full h-10 py-2 px-4 flex">
       <div className="font-semibold flex-1">{t("assets")}</div>
-      <IconButton to={{}} src={search} />
-      <Button to={{ search: `?sort=${next}` }}>
+      <IconButton to={{ search: openSearchSheet }} src={search} />
+      <Button to={{ search: nextQuery }}>
         <img src={amplitude} className="w-6 h-6" />
         <img src={iconSrc} className="w-[6px] h-[10px]" />
       </Button>
@@ -342,62 +347,14 @@ const ListItem: FC<{ asset: AssetSchema }> = ({ asset }) => {
           {asset.symbol}
         </div>
         <FormatNumber
-          className="text-xs text-gray-300"
+          className="text-xs text-gray-400"
           value={currency}
           precision={"fiat"}
           leading={symbol}
         />
       </div>
-      <AssetPrice asset={asset} className="" />
+      <AssetPriceAndChange asset={asset} className="" />
     </Button>
-  )
-}
-
-const AssetPrice: FC<
-  { asset: AssetSchema } & HTMLAttributes<HTMLAnchorElement>
-> = ({ asset, className }) => {
-  const symbol = useProfileCurrencySymbolValue()
-  const valid = useMemo(() => bigGt(asset.price_usd, 0), [asset.price_usd])
-
-  const isNegative = useMemo(
-    () => bigLt(asset.change_usd, 0),
-    [asset.change_usd]
-  )
-
-  const unitPrice = useMemo(() => {
-    if (!valid) return 0
-    return bigMul(asset.price_usd, asset.fiat?.rate ?? 0)
-  }, [valid, asset.price_usd, asset.fiat?.rate])
-  const changeUsd = useMemo(
-    () => bigMul(asset.change_usd, 100),
-    [asset.change_usd]
-  )
-
-  const [t] = useTranslation()
-
-  if (!valid)
-    return (
-      <div className={`text-sm text-gray-300 whitespace-nowrap ${className}`}>
-        {t("none")}
-      </div>
-    )
-
-  return (
-    <div
-      className={`${
-        isNegative ? "text-red-500" : "text-green-500"
-      } ${className}`}
-    >
-      <div className="flex flex-col justify-between text-xs items-end">
-        <FormatNumber value={changeUsd} precision={2} trailing="%" />
-        <FormatNumber
-          className="text-gray-300"
-          value={unitPrice}
-          precision={2}
-          leading={symbol}
-        />
-      </div>
-    </div>
   )
 }
 

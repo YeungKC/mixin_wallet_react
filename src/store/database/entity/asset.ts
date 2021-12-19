@@ -1,4 +1,4 @@
-import { Asset, ExchangeRate } from "mixin-node-sdk/dist/types/asset"
+import { Asset, ExchangeRate } from "mixin-node-sdk"
 import { EntitySchema } from "typeorm"
 import { AssetExtra } from "./asset_extra"
 
@@ -22,7 +22,7 @@ export const AssetEntity = new EntitySchema<AssetSchema>({
     change_btc: { type: String },
     price_usd: { type: String },
     change_usd: { type: String },
-    balance: { type: String },
+    balance: { type: String, default: "0" },
     destination: { type: String },
     tag: { type: String },
     confirmations: { type: Number },

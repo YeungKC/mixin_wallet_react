@@ -1,5 +1,5 @@
-import { Client } from "mixin-node-sdk"
-import { User } from "mixin-node-sdk/dist/types"
+import localforage from "localforage"
+import { Client, User } from "mixin-node-sdk"
 import { QueryClient } from "react-query"
 import { getRecoil, setRecoil } from "recoil-nexus"
 import {
@@ -197,6 +197,48 @@ class Service {
 
   ticker(assetId: string, offset?: string) {
     return this.client.readAssetNetworkTicker(assetId, offset)
+  }
+
+  topAssetIds() {
+    return localforage.getItem<string[]>("topAssetIds")
+  }
+
+  async updateTopAssetIds() {
+    const topAssets = await this.client.readTopAssets()
+    localforage.setItem(
+      "topAssetIds",
+      topAssets.map((e) => e.asset_id)
+    )
+
+    await this.database.manager.save(
+      AssetEntity,
+      topAssets.map((asset) => {
+        // eslint-disable-next-line
+        const e: any = asset
+        e.balance = undefined
+        return e
+      }),
+      {}
+    )
+
+    queryClient.invalidateQueries("topAssetId")
+    queryClient.invalidateQueries("asset")
+  }
+
+  async searchAssets(query: string) {
+    const assets = await this.client.searchAssets(query)
+
+    await this.database.manager.save(
+      AssetEntity,
+      assets.map((asset) => {
+        // eslint-disable-next-line
+        const e: any = asset
+        e.balance = undefined
+        return e
+      })
+    )
+
+    queryClient.invalidateQueries("asset")
   }
 
   private async _checkAssetExistWithReturnInsert(assetId: string) {

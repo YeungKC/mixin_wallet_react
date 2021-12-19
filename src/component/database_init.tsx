@@ -12,8 +12,6 @@ import sqlWasm from "./sql_wasm"
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const initSqlJs = require("sql.js")
 
-const isEnvProduction = process.env.NODE_ENV === "production"
-
 const DatabaseInit: FC = ({ children }) => {
   const initialized = useMemo(() => {
     try {
@@ -49,7 +47,7 @@ const DatabaseInit: FC = ({ children }) => {
             SnaphostEntity,
             UserEntity,
           ],
-          logging: !isEnvProduction,
+          logging: ["error"],
         })
       } finally {
         setLoading(false)

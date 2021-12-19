@@ -6,7 +6,7 @@ const AssetIcon: FC<
     chainIconUrl?: string
   } & HTMLAttributes<HTMLAnchorElement>
 > = ({ assetIconUrl, chainIconUrl, className }) => {
-  const chainIcon = chainIconUrl && (
+  const chainIcon = chainIconUrl && assetIconUrl !== chainIconUrl && (
     <img
       src={chainIconUrl}
       loading="lazy"

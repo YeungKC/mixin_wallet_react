@@ -1,4 +1,4 @@
-import { Asset, ExchangeRate, Snapshot, User } from "mixin-node-sdk/dist/types"
+import { Asset, ExchangeRate, Snapshot, User } from "mixin-node-sdk"
 import { EntitySchema } from "typeorm"
 
 export interface SnapshotSchema extends Snapshot {

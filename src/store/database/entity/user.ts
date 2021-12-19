@@ -1,4 +1,4 @@
-import { User } from "mixin-node-sdk/dist/types"
+import { User } from "mixin-node-sdk"
 import { EntitySchema } from "typeorm"
 
 export const UserEntity = new EntitySchema<User>({

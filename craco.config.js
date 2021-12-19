@@ -9,6 +9,8 @@ const BundleAnalyzerPlugin =
 const HtmlWebpackPlugin = require("html-webpack-plugin")
 const PrefetchPolyfillPlugin = require("./prefetch-polyfill-webpack-plugin")
 
+const isEnvProduction = process.env.NODE_ENV === "production"
+
 module.exports = {
   style: {
     postcss: {
@@ -59,6 +61,11 @@ module.exports = {
             test: /\.wasm$/,
             type: "javascript/auto",
           },
+          {
+            test: /\.mjs$/,
+            include: /node_modules/,
+            type: "javascript/auto",
+          },
         ],
       },
     },
@@ -91,7 +98,9 @@ module.exports = {
         }),
         new HtmlWebpackPlugin(),
         new PrefetchPolyfillPlugin({ ms: 2000 }),
-        new BundleAnalyzerPlugin(),
+        new BundleAnalyzerPlugin({
+          analyzerMode: isEnvProduction ? "server" : "disabled",
+        }),
       ],
     },
   },

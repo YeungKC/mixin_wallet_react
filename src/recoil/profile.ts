@@ -1,4 +1,4 @@
-import { User } from "mixin-node-sdk/dist/types"
+import { User } from "mixin-node-sdk"
 import {
   selector,
   useRecoilState,

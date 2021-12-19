@@ -5,7 +5,7 @@ import {
 } from "../recoil/profile"
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom"
 import { useEffect } from "react"
-import { Client, mixinRequest } from "mixin-node-sdk"
+import { Client, authorizeToken } from "mixin-node-sdk"
 import { LoadingPage } from "./loading"
 import authBackground from "../assets/auth_background.webp"
 import logo from "../assets/logo.webp"
@@ -39,17 +39,11 @@ const Auth = () => {
 
     const login = async (code: string) => {
       try {
-        const { access_token, scope } = await mixinRequest.post<
-          undefined,
-          {
-            access_token: string
-            scope: string
-          }
-        >("/oauth/token", {
-          client_id: process.env.REACT_APP_CLIENT_ID,
-          client_secret: process.env.REACT_APP_CLIENT_SECRET,
-          code: code,
-        })
+        const { access_token, scope } = await authorizeToken(
+          process.env.REACT_APP_CLIENT_ID,
+          code,
+          process.env.REACT_APP_CLIENT_SECRET
+        )
 
         if (!access_token) {
           toast.error(t("somethingWrong"))

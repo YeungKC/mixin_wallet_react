@@ -108,9 +108,9 @@ export const useSnapshotsAndUpdate = ({
     data: data,
     hasNextPage,
     fetchNextPage: async () => {
-      if (isLoading || isFetching) return
-      fetchNextPage()
       if (!assetId) return
+      if (isLoading || isFetching) return
+      const { data } = await fetchNextPage()
       const offset = data?.pageParams[data?.pageParams.length - 1] as
         | string
         | undefined
@@ -132,6 +132,90 @@ export const useSnapshot = (id: string) =>
 
 export const useTicker = (assetId: string, offset?: string) =>
   useQuery(["ticker", assetId, offset], () => service.ticker(assetId, offset))
+
+export const useTopAssetsAndUpdate = () => {
+  const { data: ids } = useQuery("topAssetId", () => service.topAssetIds())
+  const { data, isLoading } = useQuery(
+    ["asset", ids],
+    () =>
+      service
+        .assetResults()
+        .where("asset.asset_id IN (:...ids)", { ids })
+        .orderBy(
+          `CASE asset.asset_id
+          ${
+            ids?.map((id, index) => `WHEN '${id}' THEN ${index}`).join("\n") ??
+            ""
+          }
+          ELSE 999999
+          END
+        `
+        )
+        .limit(ids?.length ?? 0)
+        .getMany(),
+    { enabled: !!ids }
+  )
+
+  const { mutate, isLoading: updating } = useMutation({
+    mutationFn: () => service.updateTopAssetIds(),
+  })
+
+  useEffect(() => {
+    mutate()
+  }, [mutate])
+
+  return {
+    data,
+    isLoading: isLoading || (updating && !data),
+    mutate: mutate,
+  }
+}
+
+export const useSearchAssets = (query: string | null | undefined) => {
+  const { data, isLoading } = useQuery(["asset", query], () => {
+    if (!query) return []
+
+    const length = query.length
+    return service
+      .assetResults()
+      .orWhere(`asset.symbol LIKE '%${query}%'`)
+      .orWhere(`asset.name LIKE '%${query}%'`)
+      .addOrderBy(
+        `
+          CASE
+          WHEN asset.symbol = '${query}' THEN 1
+          WHEN asset.name = '${query}' THEN 1
+          WHEN asset.symbol LIKE '${query}%' THEN 100 + LENGTH(${length})
+          WHEN asset.name LIKE '${query}%' THEN 100 + LENGTH(${length})
+
+          WHEN asset.symbol LIKE '%${query}%' THEN 200 + LENGTH(${length})
+          WHEN asset.name LIKE '%${query}%' THEN 200 + LENGTH(${length})
+
+          WHEN asset.symbol LIKE '%${query}' THEN 300 + LENGTH(${length})
+          WHEN asset.name LIKE '%${query}' THEN 300 + LENGTH(${length})
+          ELSE 1000
+          END
+          `
+      )
+      .addOrderBy("asset.price_usd > 0", "DESC")
+      .addOrderBy("asset.symbol", "ASC")
+      .addOrderBy("asset.name", "ASC")
+      .getMany()
+  })
+
+  const { mutate, isLoading: updating } = useMutation({
+    mutationFn: (query: string) => service.searchAssets(query),
+  })
+
+  useEffect(() => {
+    if (query) mutate(query)
+  }, [mutate, query])
+
+  return {
+    data,
+    isLoading: isLoading || updating,
+  }
+}
 
 export const useUpdateAssets = () =>
   useMutation({
