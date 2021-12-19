@@ -1,5 +1,10 @@
 import localforage from "localforage"
-import { Client, User } from "mixin-node-sdk"
+import {
+  Client,
+  readNetworkAssetsTop,
+  searchNetworkAsset,
+  User,
+} from "mixin-node-sdk"
 import { QueryClient } from "react-query"
 import { getRecoil, setRecoil } from "recoil-nexus"
 import {
@@ -204,7 +209,7 @@ class Service {
   }
 
   async updateTopAssetIds() {
-    const topAssets = await this.client.readTopAssets()
+    const topAssets = await readNetworkAssetsTop()
     localforage.setItem(
       "topAssetIds",
       topAssets.map((e) => e.asset_id)
@@ -226,7 +231,7 @@ class Service {
   }
 
   async searchAssets(query: string) {
-    const assets = await this.client.searchAssets(query)
+    const assets = await searchNetworkAsset(query)
 
     await this.database.manager.save(
       AssetEntity,
