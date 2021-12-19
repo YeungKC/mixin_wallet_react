@@ -18,6 +18,7 @@ export type BottomSheetProps = {
   onClose: () => void
   snapPoints?: number[]
   label?: string
+  disableDrag?: boolean
 }
 
 const BottomSheet: FC<BottomSheetProps> = ({
@@ -25,6 +26,7 @@ const BottomSheet: FC<BottomSheetProps> = ({
   onClose,
   snapPoints,
   label,
+  disableDrag = true,
   children,
   ...rest
 }) => {
@@ -39,6 +41,7 @@ const BottomSheet: FC<BottomSheetProps> = ({
       isOpen={sheetState.isOpen}
       onClose={onClose}
       snapPoints={snapPoints}
+      disableDrag={disableDrag}
       className="container"
     >
       <OverlayProvider>
