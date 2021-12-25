@@ -1,4 +1,12 @@
-import { FC, HTMLAttributes, lazy, Suspense, useEffect, useMemo } from "react"
+import {
+  FC,
+  HTMLAttributes,
+  lazy,
+  memo,
+  Suspense,
+  useEffect,
+  useMemo,
+} from "react"
 import { useTranslation } from "react-i18next"
 import { useSearchParams } from "react-router-dom"
 import { Cell, Pie, PieChart } from "recharts"
@@ -27,6 +35,7 @@ import { bigAdd, bigDiv, bigMul, bigSub, toRounding } from "../../util/big"
 import { LoadingPage } from "../loading"
 import { useSetQueryString } from "../../util/router"
 import AssetPriceAndChange from "../../component/asset_price_and_change"
+import WindowList from "../../component/common/window_list"
 
 const SearchSheet = lazy(() => import("./search_sheet"))
 
@@ -47,7 +56,7 @@ const Home = () => {
         <Balance className="mb-6 mt-6" />
         <Chart className="mb-6" />
         <ActionBar className="mb-6" />
-        <List />
+        <_List />
       </div>
       <Suspense fallback={null}>
         <SearchSheet />
@@ -72,7 +81,7 @@ const CurrentUserAvatar = () => {
   return <Avatar user={profile} className="mr-2" />
 }
 
-const Balance: FC<HTMLAttributes<HTMLAnchorElement>> = ({ className }) => {
+const Balance: FC<HTMLAttributes<HTMLAnchorElement>> = memo(({ className }) => {
   const { data = [] } = useAssets()
   const symbol = useProfileCurrencySymbolValue()
   const bitcoinAsset = useMemo(
@@ -122,11 +131,11 @@ const Balance: FC<HTMLAttributes<HTMLAnchorElement>> = ({ className }) => {
       />
     </div>
   )
-}
+})
 
 // tailwind color
 const COLORS = ["#FC9E1F", "#FFCA3E", "#5278FF", "#DFE1E5"]
-const Chart: FC<HTMLAttributes<HTMLAnchorElement>> = ({ className }) => {
+const Chart: FC<HTMLAttributes<HTMLAnchorElement>> = memo(({ className }) => {
   const [t] = useTranslation()
 
   const { data = [], isLoading } = useAssets()
@@ -221,7 +230,7 @@ const Chart: FC<HTMLAttributes<HTMLAnchorElement>> = ({ className }) => {
       </div>
     </div>
   )
-}
+})
 
 const ChartItem: FC<{ name: string; percent: number; color: string }> = ({
   name,
@@ -256,7 +265,7 @@ const ActionBar: FC<HTMLAttributes<HTMLDivElement>> = ({ className }) => {
   )
 }
 
-const List: FC = () => {
+const _List = memo(() => {
   const [params] = useSearchParams()
   const sortValue = params.get("sort")
   const sort = useMemo(() => {
@@ -272,16 +281,24 @@ const List: FC = () => {
   const { data = [] } = useAssets({ sort: sort })
 
   return (
-    <div className="w-full flex flex-col">
+    <>
       <ListHeader sort={sort} />
-      {data.map((asset) => (
-        <ListItem key={asset.asset_id} asset={asset} />
-      ))}
-    </div>
+      <WindowList
+        rowCount={data.length}
+        rowHeight={72}
+        rowRenderer={({ index, style }) => (
+          <ListItem
+            key={data[index].asset_id}
+            style={style}
+            asset={data[index]}
+          />
+        )}
+      />
+    </>
   )
-}
+})
 
-const ListHeader: FC<{ sort?: typeof assetSortType }> = ({ sort }) => {
+const ListHeader: FC<{ sort?: typeof assetSortType }> = memo(({ sort }) => {
   const next = useMemo(() => {
     switch (sort) {
       case "increase":
@@ -319,43 +336,45 @@ const ListHeader: FC<{ sort?: typeof assetSortType }> = ({ sort }) => {
       </Button>
     </div>
   )
-}
+})
 
-const ListItem: FC<{ asset: AssetSchema }> = ({ asset }) => {
-  const currency = useMemo(
-    () => bigMul(asset.balance, asset.price_usd, asset.fiat?.rate ?? 0),
-    [asset.balance, asset.price_usd, asset.fiat?.rate]
-  )
-  const symbol = useProfileCurrencySymbolValue()
-  return (
-    <Button
-      to={`/asset/${asset.asset_id}`}
-      className="h-[72px] p-4 w-full flex gap-3"
-    >
-      <AssetIcon
-        assetIconUrl={asset.icon_url}
-        chainIconUrl={asset.chain?.icon_url}
-        className="flex-shrink-0"
-      />
-      <div className="flex-grow flex flex-col justify-between overflow-hidden overflow-ellipsis">
-        <div className="flex font-semibold text-sm gap-1 whitespace-nowrap">
-          <FormatNumber
-            className="overflow-hidden overflow-ellipsis"
-            value={asset.balance}
-            precision={"crypto"}
-          />
-          {asset.symbol}
-        </div>
-        <FormatNumber
-          className="text-xs text-gray-400"
-          value={currency}
-          precision={"fiat"}
-          leading={symbol}
+const ListItem: FC<{ asset: AssetSchema } & HTMLAttributes<HTMLAnchorElement>> =
+  memo(({ asset, style }) => {
+    const currency = useMemo(
+      () => bigMul(asset.balance, asset.price_usd, asset.fiat?.rate ?? 0),
+      [asset.balance, asset.price_usd, asset.fiat?.rate]
+    )
+    const symbol = useProfileCurrencySymbolValue()
+    return (
+      <Button
+        to={`/asset/${asset.asset_id}`}
+        className="p-4 flex gap-3"
+        style={style}
+      >
+        <AssetIcon
+          assetIconUrl={asset.icon_url}
+          chainIconUrl={asset.chain?.icon_url}
+          className="flex-shrink-0"
         />
-      </div>
-      <AssetPriceAndChange asset={asset} className="" />
-    </Button>
-  )
-}
+        <div className="flex-grow flex flex-col justify-between overflow-hidden overflow-ellipsis">
+          <div className="flex font-semibold text-sm gap-1 whitespace-nowrap">
+            <FormatNumber
+              className="overflow-hidden overflow-ellipsis"
+              value={asset.balance}
+              precision={"crypto"}
+            />
+            {asset.symbol}
+          </div>
+          <FormatNumber
+            className="text-xs text-gray-400"
+            value={currency}
+            precision={"fiat"}
+            leading={symbol}
+          />
+        </div>
+        <AssetPriceAndChange asset={asset} className="" />
+      </Button>
+    )
+  })
 
 export default Home

@@ -32,4 +32,10 @@ export const AssetEntity = new EntitySchema<AssetSchema>({
     liquidity: { type: String, nullable: true },
     snapshots_count: { type: Number, nullable: true },
   },
+  indices: [
+    { columns: (e) => [e.chain_id] },
+    { columns: (e) => [e.balance, e.price_usd] },
+    { columns: (e) => [e.balance] },
+    { columns: (e) => [e.price_usd] },
+  ],
 })

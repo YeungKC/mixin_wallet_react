@@ -1,11 +1,11 @@
-import { FC, HTMLAttributes } from "react"
+import { FC, HTMLAttributes, memo } from "react"
 
 const AssetIcon: FC<
   {
     assetIconUrl: string
     chainIconUrl?: string
   } & HTMLAttributes<HTMLAnchorElement>
-> = ({ assetIconUrl, chainIconUrl, className }) => {
+> = memo(({ assetIconUrl, chainIconUrl, className }) => {
   const chainIcon = chainIconUrl && assetIconUrl !== chainIconUrl && (
     <img
       src={chainIconUrl}
@@ -19,6 +19,6 @@ const AssetIcon: FC<
       {chainIcon}
     </div>
   )
-}
+})
 
 export default AssetIcon

@@ -142,5 +142,7 @@
   "somethingWrong": "出错了，请重试",
   "updating": "更新中",
   "updatedSuccessfully": "更新成功",
-  "updatedFailed": "更新失败"
+  "updatedFailed": "更新失败",
+  "loadingMore": "加载更多……",
+  "noMoreData": "没有更多数据了"
 }

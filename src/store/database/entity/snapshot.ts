@@ -34,4 +34,8 @@ export const SnaphostEntity = new EntitySchema<SnapshotSchema>({
 
     confirmations: { type: Number, nullable: true },
   },
+  indices: [
+    { columns: (e) => [e.created_at] },
+    { columns: (e) => [e.asset_id] },
+  ],
 })

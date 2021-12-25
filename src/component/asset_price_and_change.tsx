@@ -1,4 +1,4 @@
-import { FC, HTMLAttributes, useMemo } from "react"
+import { FC, HTMLAttributes, memo, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { useProfileCurrencySymbolValue } from "../recoil/profile"
 import { AssetSchema } from "../store/database/entity/asset"
@@ -53,4 +53,4 @@ const AssetPriceAndChange: FC<
   )
 }
 
-export default AssetPriceAndChange
+export default memo(AssetPriceAndChange)

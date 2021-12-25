@@ -5,7 +5,6 @@ const autoprefixer = require("autoprefixer")
 const FilterWarningsPlugin = require("webpack-filter-warnings-plugin")
 const BundleAnalyzerPlugin =
   require("webpack-bundle-analyzer").BundleAnalyzerPlugin
-
 const HtmlWebpackPlugin = require("html-webpack-plugin")
 const PrefetchPolyfillPlugin = require("./prefetch-polyfill-webpack-plugin")
 
@@ -19,22 +18,14 @@ module.exports = {
   },
   webpack: {
     configure: {
+      devtool: isEnvProduction
+        ? "nosources-source-map"
+        : "eval-cheap-module-source-map",
       optimization: {
+        concatenateModules: !isEnvProduction,
         splitChunks: {
           minSize: 30,
           cacheGroups: {
-            default: {
-              name: "common",
-              chunks: "initial",
-              minChunks: 2,
-              priority: -20,
-            },
-            vendors: {
-              test: /node_modules/,
-              name: "vendor",
-              chunks: "initial",
-              priority: -10,
-            },
             typeorm: {
               chunks: "initial",
               name: "typeorm",

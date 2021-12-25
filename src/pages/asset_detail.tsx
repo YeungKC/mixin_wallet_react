@@ -15,12 +15,12 @@ import { useProfileCurrencySymbolValue } from "../recoil/profile"
 import { bigGt, bigMul } from "../util/big"
 import ActionBarButton from "../component/action_bar_button"
 import { useTranslation } from "react-i18next"
-import InfiniteScroll from "../component/common/infinite_scroll"
 import { SnapshotSchema } from "../store/database/entity/snapshot"
 import Button from "../component/common/button"
 import TransactionType from "../component/transaction_type"
 import TransactionIcon from "../component/transaction_icon"
 import formatDate from "../util/format_date"
+import WindowList from "../component/common/window_list"
 
 const AssetDetail = () => {
   const { assetId } = useParams()
@@ -96,30 +96,50 @@ const ActionBar: FC<HTMLAttributes<HTMLDivElement>> = ({ className }) => {
 
 const ListAsset = () => {
   const { assetId } = useParams()
-  const { data, fetchNextPage } = useSnapshotsAndUpdate({
-    assetId: assetId ?? "",
-  })
+  const { data, fetchNextPage, hasNextPage, isLoading } = useSnapshotsAndUpdate(
+    {
+      assetId: assetId ?? "",
+    }
+  )
+
+  const [t] = useTranslation()
 
   const list = data?.pages?.reduce((p, c) => p.concat(c), []) ?? []
 
   return (
     <div className="w-full">
-      <InfiniteScroll onIntersect={fetchNextPage}>
-        {list?.map((item) => (
-          <ListItem key={item.snapshot_id} data={item} />
-        ))}
-        {/* todo: show loading */}
-      </InfiniteScroll>
+      <WindowList
+        onScroll={({ clientHeight, scrollHeight, scrollTop }) => {
+          if (scrollHeight - scrollTop > clientHeight * 1.5) return
+          fetchNextPage()
+        }}
+        rowCount={list.length}
+        rowHeight={72}
+        rowRenderer={({ index, style }) => (
+          <ListItem
+            key={list[index].snapshot_id}
+            style={style}
+            data={list[index]}
+          />
+        )}
+      />
+      <p className="p-8 flex justify-center items-center text-sm text-gray-400">
+        {(hasNextPage || isLoading) && t("loadingMore")}
+        {!hasNextPage && !isLoading && t("noMoreData")}
+      </p>
     </div>
   )
 }
 
-const ListItem: FC<{ data: SnapshotSchema }> = ({ data }) => {
+const ListItem: FC<
+  { data: SnapshotSchema } & HTMLAttributes<HTMLAnchorElement>
+> = ({ data, style }) => {
   const isPositive = useMemo(() => bigGt(data.amount, 0), [data.amount])
   return (
     <Button
       to={`/snapshot/${data.snapshot_id}`}
-      className="h-[72px] p-4 w-full flex gap-3"
+      className="p-4 flex gap-3"
+      style={style}
     >
       <TransactionIcon data={data} className="flex-shrink-0" />
       <div className="flex-grow flex flex-col justify-between overflow-hidden overflow-ellipsis">

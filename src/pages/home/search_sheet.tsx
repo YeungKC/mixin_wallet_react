@@ -1,4 +1,12 @@
-import { FC, useCallback, useEffect, useState } from "react"
+import {
+  FC,
+  HTMLAttributes,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react"
 import { useTranslation } from "react-i18next"
 import AssetIcon from "../../component/asset_icon"
 import AssetPriceAndChange from "../../component/asset_price_and_change"
@@ -10,6 +18,7 @@ import { LoadingPage } from "../loading"
 import search from "../../assets/ic_search_small.svg"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import BottomSheet from "../../component/common/bottom_sheet"
+import WindowList from "../../component/common/window_list"
 
 const SearchSheet = () => {
   const [params] = useSearchParams()
@@ -29,24 +38,46 @@ const SearchSheet = () => {
   )
 }
 
-const SearchSheetPage = () => {
+const SearchSheetPage: FC = () => {
   const [params] = useSearchParams()
   const keyword = params.get("searchSheet")
   const { data } = useSearchAssets(keyword)
+  const scrollElementRef = useRef(null)
+
+  const scrollToIndex = useMemo(
+    () => 0,
+    // eslint-disable-next-line
+    [data, keyword]
+  )
 
   return (
-    <div>
+    <div ref={scrollElementRef} className="overflow-auto h-full">
       <SearchHeader />
-      {data &&
-        data.map((asset) => (
-          <ListItem key={`search-${asset.asset_id}`} asset={asset} />
-        ))}
-      {(!data || !keyword) && <InitAssets />}
+      {data && (
+        <WindowList
+          key="search"
+          scrollElement={scrollElementRef.current || undefined}
+          scrollToIndex={scrollToIndex}
+          listStyle={{ width: "100%" }}
+          rowCount={data.length}
+          rowHeight={72}
+          rowRenderer={({ index, style }) => (
+            <ListItem
+              key={data[index].asset_id}
+              style={style}
+              asset={data[index]}
+            />
+          )}
+        />
+      )}
+      {(!data || !keyword) && (
+        <InitAssets scrollElement={scrollElementRef.current || undefined} />
+      )}
     </div>
   )
 }
 
-const InitAssets = () => {
+const InitAssets: FC<{ scrollElement?: Element }> = ({ scrollElement }) => {
   const { data, isLoading } = useTopAssetsAndUpdate()
   const [t] = useTranslation()
 
@@ -57,9 +88,20 @@ const InitAssets = () => {
   return (
     <>
       <p className="mx-4 mt-2 text-sm">{t("assetTrending")}</p>
-      {data.map((asset) => (
-        <ListItem key={`top-${asset.asset_id}`} asset={asset} />
-      ))}
+      <WindowList
+        key={`top-${scrollElement}`}
+        scrollElement={scrollElement}
+        listStyle={{ width: "100%" }}
+        rowCount={data.length}
+        rowHeight={72}
+        rowRenderer={({ index, style }) => (
+          <ListItem
+            key={`top-${data[index].asset_id}`}
+            style={style}
+            asset={data[index]}
+          />
+        )}
+      />
     </>
   )
 }
@@ -74,9 +116,10 @@ const SearchHeader = () => {
   const keywordQuery = useSetQueryString({ searchSheet: keyword })
 
   useEffect(() => {
-    const interval = setTimeout(() => {
-      return navigate({ search: keywordQuery })
-    }, 200)
+    const interval = setTimeout(
+      () => navigate({ search: keywordQuery }, { replace: true }),
+      200
+    )
     return () => clearInterval(interval)
   }, [navigate, keywordQuery])
 
@@ -85,7 +128,7 @@ const SearchHeader = () => {
   const [t] = useTranslation()
   return (
     <div className="flex gap-2 p-4 sticky top-0 bg-white z-10">
-      <div className="relative flex-grow ">
+      <div className="relative flex-grow">
         <input
           autoFocus
           value={keyword}
@@ -105,10 +148,13 @@ const SearchHeader = () => {
   )
 }
 
-const ListItem: FC<{ asset: AssetSchema }> = ({ asset }) => (
+const ListItem: FC<
+  { asset: AssetSchema } & HTMLAttributes<HTMLButtonElement>
+> = ({ asset, style }) => (
   <Button
     to={`/asset/${asset.asset_id}`}
-    className="h-[72px] p-4 w-full flex gap-3"
+    className="p-4 flex gap-3 relative"
+    style={style}
   >
     <AssetIcon
       assetIconUrl={asset.icon_url}

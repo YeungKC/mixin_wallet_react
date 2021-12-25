@@ -145,5 +145,7 @@
   "somethingWrong": "Something wrong, please try again",
   "updating": "Updating",
   "updatedSuccessfully": "Updated successfully",
-  "updatedFailed": "Updated failed"
+  "updatedFailed": "Updated failed",
+  "loadingMore": "Loading more...",
+  "noMoreData": "No more data"
 }

@@ -90,7 +90,10 @@ export const useSnapshotsAndUpdate = ({
         .getMany()
     },
     {
-      getNextPageParam: (lastPage) => lastPage[lastPage.length - 1]?.created_at,
+      getNextPageParam: (lastPage) => {
+        if (lastPage.length < limit) return undefined
+        return lastPage[lastPage.length - 1]?.created_at
+      },
     }
   )
   const { mutateAsync, isLoading } = useUpdateAssetSnapshots()
@@ -106,6 +109,7 @@ export const useSnapshotsAndUpdate = ({
 
   return {
     data: data,
+    isLoading: isLoading || isFetching,
     hasNextPage,
     fetchNextPage: async () => {
       if (!assetId) return
@@ -174,8 +178,6 @@ export const useTopAssetsAndUpdate = () => {
 export const useSearchAssets = (query: string | null | undefined) => {
   const { data, isLoading } = useQuery(["asset", query], () => {
     if (!query) return []
-
-    const length = query.length
     return service
       .assetResults()
       .orWhere(`asset.symbol LIKE '%${query}%'`)
@@ -184,15 +186,15 @@ export const useSearchAssets = (query: string | null | undefined) => {
         `
           CASE
           WHEN asset.symbol = '${query}' THEN 1
-          WHEN asset.name = '${query}' THEN 1
-          WHEN asset.symbol LIKE '${query}%' THEN 100 + LENGTH(${length})
-          WHEN asset.name LIKE '${query}%' THEN 100 + LENGTH(${length})
+          WHEN asset.name = '${query}' THEN 2
+          WHEN asset.symbol LIKE '${query}%' THEN 100 + LENGTH(asset.symbol)
+          WHEN asset.name LIKE '${query}%' THEN 200 + LENGTH(asset.name)
 
-          WHEN asset.symbol LIKE '%${query}%' THEN 200 + LENGTH(${length})
-          WHEN asset.name LIKE '%${query}%' THEN 200 + LENGTH(${length})
+          WHEN asset.symbol LIKE '%${query}%' THEN 300 + LENGTH(asset.symbol)
+          WHEN asset.name LIKE '%${query}%' THEN 400 + LENGTH(asset.name)
 
-          WHEN asset.symbol LIKE '%${query}' THEN 300 + LENGTH(${length})
-          WHEN asset.name LIKE '%${query}' THEN 300 + LENGTH(${length})
+          WHEN asset.symbol LIKE '%${query}' THEN 500 + LENGTH(asset.symbol)
+          WHEN asset.name LIKE '%${query}' THEN 600 + LENGTH(asset.name)
           ELSE 1000
           END
           `
