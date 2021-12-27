@@ -1,16 +1,18 @@
 import "./i18n"
-import { RecoilRoot } from "recoil"
-import { FC, lazy, Suspense } from "react"
-import { HashRouter, Routes, Route } from "react-router-dom"
-import { LoadingPage } from "./pages/loading"
-import { ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
-import RequireAuthAndDatabase from "./component/require_auth_and_database"
 import "reflect-metadata"
-import RecoilNexus from "recoil-nexus"
+
+import { FC, lazy, Suspense } from "react"
 import { QueryClientProvider } from "react-query"
-import { queryClient } from "./service/service"
+import { HashRouter, Route, Routes } from "react-router-dom"
+import { ToastContainer } from "react-toastify"
+import { RecoilRoot } from "recoil"
+import RecoilNexus from "recoil-nexus"
+
+import RequireAuthAndDatabase from "./component/require_auth_and_database"
 import UpdateProfile from "./component/service/update_profile"
+import { LoadingPage } from "./pages/loading"
+import { queryClient } from "./service/service"
 
 const Providers: FC = ({ children }) => {
   return (
