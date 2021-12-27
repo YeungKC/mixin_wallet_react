@@ -68,7 +68,10 @@ const A11ySheetContent: FC<{
 
   return (
     <>
-      <Sheet.Container style={{ outline: "none" }} {...a11yProps}>
+      <Sheet.Container
+        style={{ outline: "none", boxShadow: "none" }}
+        {...a11yProps}
+      >
         <Sheet.Content onViewportBoxUpdate={() => undefined}>
           {children}
         </Sheet.Content>

@@ -142,7 +142,7 @@ const ListItem: FC<
       style={style}
     >
       <TransactionIcon data={data} className="flex-shrink-0" />
-      <div className="flex-grow flex flex-col justify-between overflow-hidden overflow-ellipsis">
+      <div className="flex-grow flex flex-col justify-between truncate">
         <p className="font-medium text-sm">
           <TransactionType type={data.type} />
         </p>

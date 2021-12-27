@@ -29,9 +29,7 @@ const AssetPriceAndChange: FC<
 
   if (!valid)
     return (
-      <div className={`text-sm text-gray-400 whitespace-nowrap ${className}`}>
-        {t("none")}
-      </div>
+      <div className={`text-sm text-gray-400 ${className}`}>{t("none")}</div>
     )
 
   return (

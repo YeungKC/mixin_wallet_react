@@ -127,7 +127,7 @@ const SearchHeader = () => {
 
   const [t] = useTranslation()
   return (
-    <div className="flex gap-2 p-4 sticky top-0 bg-white z-10">
+    <div className="flex gap-2 p-4 sticky top-0 bg-white rounded-t-lg z-10">
       <div className="relative flex-grow">
         <input
           autoFocus
@@ -161,7 +161,7 @@ const ListItem: FC<
       chainIconUrl={asset.chain?.icon_url}
       className="flex-shrink-0"
     />
-    <div className="flex-grow flex flex-col justify-between overflow-hidden overflow-ellipsis">
+    <div className="flex-grow flex flex-col justify-between truncate">
       <p className="font-semibold text-sm">{asset.symbol}</p>
       <p className="text-xs text-gray-400">{asset.name}</p>
     </div>

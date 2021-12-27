@@ -243,9 +243,7 @@ const ChartItem: FC<{ name: string; percent: number; color: string }> = ({
         className="w-[10px] h-[10px] min-w-[10px] rounded-full mr-2"
         style={{ background: color }}
       />
-      <div className="overflow-hidden whitespace-nowrap overflow-ellipsis">
-        {name}
-      </div>
+      <div className="overflow-hidden truncate">{name}</div>
       <div className="ml-2">{`${percent}%`}</div>
     </div>
   )
@@ -356,13 +354,9 @@ const ListItem: FC<{ asset: AssetSchema } & HTMLAttributes<HTMLAnchorElement>> =
           chainIconUrl={asset.chain?.icon_url}
           className="flex-shrink-0"
         />
-        <div className="flex-grow flex flex-col justify-between overflow-hidden overflow-ellipsis">
-          <div className="flex font-semibold text-sm gap-1 whitespace-nowrap">
-            <FormatNumber
-              className="overflow-hidden overflow-ellipsis"
-              value={asset.balance}
-              precision={"crypto"}
-            />
+        <div className="flex-grow flex flex-col justify-between truncate">
+          <div className="flex font-semibold text-sm gap-1">
+            <FormatNumber value={asset.balance} precision={"crypto"} />
             {asset.symbol}
           </div>
           <FormatNumber
