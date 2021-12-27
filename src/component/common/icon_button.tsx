@@ -1,4 +1,5 @@
 import { FC } from "react"
+
 import Button, { ButtonProps } from "./button"
 
 const IconButton: FC<typeof ButtonProps & { src: string }> = (props) => {

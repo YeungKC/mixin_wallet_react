@@ -1,26 +1,27 @@
+import { FC, HTMLAttributes, useEffect, useMemo } from "react"
+import { useTranslation } from "react-i18next"
 import { useParams } from "react-router"
+
+import ActionBarButton from "../component/action_bar_button"
 import AppBar from "../component/app_bar"
+import AssetIcon from "../component/asset_icon"
+import BackButton from "../component/common/back_button"
+import Button from "../component/common/button"
+import FormatNumber from "../component/common/format_number"
+import WindowList from "../component/common/window_list"
+import TransactionIcon from "../component/transaction_icon"
+import TransactionType from "../component/transaction_type"
+import { useProfileCurrencySymbolValue } from "../recoil/profile"
 import {
   useAsset,
   useSnapshotsAndUpdate,
   useUpdateAsset,
 } from "../service/hook"
-import { LoadingPage } from "./loading"
-import BackButton from "../component/common/back_button"
-import AssetIcon from "../component/asset_icon"
-import FormatNumber from "../component/common/format_number"
-import { FC, HTMLAttributes, useEffect, useMemo } from "react"
 import { AssetSchema } from "../store/database/entity/asset"
-import { useProfileCurrencySymbolValue } from "../recoil/profile"
-import { bigGt, bigMul } from "../util/big"
-import ActionBarButton from "../component/action_bar_button"
-import { useTranslation } from "react-i18next"
 import { SnapshotSchema } from "../store/database/entity/snapshot"
-import Button from "../component/common/button"
-import TransactionType from "../component/transaction_type"
-import TransactionIcon from "../component/transaction_icon"
+import { bigGt, bigMul } from "../util/big"
 import formatDate from "../util/format_date"
-import WindowList from "../component/common/window_list"
+import { LoadingPage } from "./loading"
 
 const AssetDetail = () => {
   const { assetId } = useParams()

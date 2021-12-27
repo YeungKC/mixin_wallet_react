@@ -1,7 +1,8 @@
 import { FC } from "react"
-import Button from "./button"
-import back from "../../assets/ic_back.svg"
 import { useNavigate } from "react-router-dom"
+
+import back from "../../assets/ic_back.svg"
+import Button from "./button"
 
 const BackButton: FC = () => {
   const navigate = useNavigate()

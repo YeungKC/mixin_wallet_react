@@ -20,10 +20,12 @@ import setting from "../../assets/setting.svg"
 import ActionBarButton from "../../component/action_bar_button"
 import AppBar from "../../component/app_bar"
 import AssetIcon from "../../component/asset_icon"
+import AssetPriceAndChange from "../../component/asset_price_and_change"
 import Avatar from "../../component/avatar"
 import Button from "../../component/common/button"
 import FormatNumber from "../../component/common/format_number"
 import IconButton from "../../component/common/icon_button"
+import WindowList from "../../component/common/window_list"
 import { bitcoin } from "../../constant"
 import {
   useProfileCurrencySymbolValue,
@@ -32,10 +34,8 @@ import {
 import { assetSortType, useAssets, useUpdateAssets } from "../../service/hook"
 import { AssetSchema } from "../../store/database/entity/asset"
 import { bigAdd, bigDiv, bigMul, bigSub, toRounding } from "../../util/big"
-import { LoadingPage } from "../loading"
 import { useSetQueryString } from "../../util/router"
-import AssetPriceAndChange from "../../component/asset_price_and_change"
-import WindowList from "../../component/common/window_list"
+import { LoadingPage } from "../loading"
 
 const SearchSheet = lazy(() => import("./search_sheet"))
 

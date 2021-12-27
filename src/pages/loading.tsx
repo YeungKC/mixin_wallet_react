@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next"
+
 import { Spinner } from "../component/common/spinner"
 
 export const LoadingPage = ({ showTips }: { showTips?: boolean }) => {

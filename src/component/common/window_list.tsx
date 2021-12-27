@@ -1,10 +1,10 @@
 import {
-  WindowScroller,
   AutoSizer,
-  List,
   Index,
+  List,
   ListRowRenderer,
   OnScrollParams,
+  WindowScroller,
 } from "react-virtualized"
 
 export interface WindowListProps {

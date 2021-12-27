@@ -5,11 +5,16 @@
     "plugin:@typescript-eslint/recommended",
     "plugin:prettier/recommended"
   ],
-  "plugins": ["react-hooks", "@typescript-eslint"],
+  "plugins": ["react-hooks", "@typescript-eslint", "simple-import-sort"],
   "rules": {
+    // hook
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "error",
-    "@typescript-eslint/explicit-module-boundary-types": "off"
+    // typescript
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    // import
+    "simple-import-sort/imports": "error",
+    "simple-import-sort/exports": "error"
   },
   "parser": "@typescript-eslint/parser",
   "parserOptions": {

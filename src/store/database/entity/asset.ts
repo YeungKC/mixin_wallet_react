@@ -1,5 +1,6 @@
 import { Asset, ExchangeRate } from "mixin-node-sdk"
 import { EntitySchema } from "typeorm"
+
 import { AssetExtra } from "./asset_extra"
 
 export interface AssetSchema extends Asset {

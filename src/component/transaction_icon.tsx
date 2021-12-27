@@ -1,10 +1,10 @@
 import { FC, HTMLAttributes } from "react"
-import { SnapshotSchema } from "../store/database/entity/snapshot"
-import Avatar from "./avatar"
 
 import transactionDeposit from "../assets/transaction_deposit.svg"
-import transactionWithdrawal from "../assets/transaction_withdrawal.svg"
 import transactionNet from "../assets/transaction_net.svg"
+import transactionWithdrawal from "../assets/transaction_withdrawal.svg"
+import { SnapshotSchema } from "../store/database/entity/snapshot"
+import Avatar from "./avatar"
 
 const TransactionIcon: FC<
   { data: SnapshotSchema } & HTMLAttributes<HTMLAnchorElement>

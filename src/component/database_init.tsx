@@ -1,6 +1,7 @@
 import localforage from "localforage"
 import { FC, useEffect, useMemo, useState } from "react"
 import { createConnection, getConnection } from "typeorm"
+
 import { LoadingPage } from "../pages/loading"
 import { AddressEntity } from "../store/database/entity/address"
 import { AssetEntity } from "../store/database/entity/asset"

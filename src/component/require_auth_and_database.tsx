@@ -1,5 +1,6 @@
 import { FC, Suspense } from "react"
-import { useSearchParams, useLocation, Navigate } from "react-router-dom"
+import { Navigate, useLocation, useSearchParams } from "react-router-dom"
+
 import { LoadingPage } from "../pages/loading"
 import { setLocationFrom, useHasTokenValue } from "../recoil/profile"
 import DatabaseInit from "./database_init"

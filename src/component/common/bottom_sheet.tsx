@@ -1,17 +1,17 @@
-import { FC, useEffect, useRef } from "react"
-import Sheet from "react-modal-sheet"
+import { useDialog } from "@react-aria/dialog"
+import { FocusScope } from "@react-aria/focus"
 import {
-  useOverlayTriggerState,
-  OverlayTriggerState,
-} from "@react-stately/overlays"
-import {
+  OverlayProvider,
+  useModal,
   useOverlay,
   usePreventScroll,
-  useModal,
-  OverlayProvider,
 } from "@react-aria/overlays"
-import { FocusScope } from "@react-aria/focus"
-import { useDialog } from "@react-aria/dialog"
+import {
+  OverlayTriggerState,
+  useOverlayTriggerState,
+} from "@react-stately/overlays"
+import { FC, useEffect, useRef } from "react"
+import Sheet from "react-modal-sheet"
 
 export type BottomSheetProps = {
   open: boolean

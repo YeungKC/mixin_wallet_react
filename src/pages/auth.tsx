@@ -1,16 +1,17 @@
+import { authorizeToken, Client } from "mixin-node-sdk"
+import { useEffect } from "react"
+import { useTranslation } from "react-i18next"
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom"
+import { toast } from "react-toastify"
+
+import authBackground from "../assets/auth_background.webp"
+import logo from "../assets/logo.webp"
 import {
   getLocationFrom,
   useSetProfileState,
   useTokenState,
 } from "../recoil/profile"
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom"
-import { useEffect } from "react"
-import { Client, authorizeToken } from "mixin-node-sdk"
 import { LoadingPage } from "./loading"
-import authBackground from "../assets/auth_background.webp"
-import logo from "../assets/logo.webp"
-import { useTranslation } from "react-i18next"
-import { toast } from "react-toastify"
 
 const Auth = () => {
   const { t } = useTranslation()

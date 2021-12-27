@@ -1,4 +1,4 @@
-import { FC, useRef, useEffect, useCallback } from "react"
+import { FC, useCallback, useEffect, useRef } from "react"
 
 export interface InfiniteScrollProps {
   defaultPage?: number
