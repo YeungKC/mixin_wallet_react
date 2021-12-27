@@ -1,118 +1,77 @@
-import { useDialog } from "@react-aria/dialog"
-import { FocusScope } from "@react-aria/focus"
-import {
-  OverlayProvider,
-  useModal,
-  useOverlay,
-  usePreventScroll,
-} from "@react-aria/overlays"
-import {
-  OverlayTriggerState,
-  useOverlayTriggerState,
-} from "@react-stately/overlays"
-import { FC, useEffect, useRef } from "react"
-import Sheet from "react-modal-sheet"
+import { Dialog } from "@headlessui/react"
+import { AnimatePresence, motion } from "framer-motion"
+import { FC } from "react"
 
 export type BottomSheetProps = {
   open: boolean
   onClose: () => void
-  snapPoints?: number[]
-  label?: string
-  disableDrag?: boolean
+  className?: string
+  overlayClassName?: string
+}
+
+const ENTER_TRANSITION = {
+  ease: "easeOut",
+  duration: 0.3,
+}
+const EXIT_TRANSITION = {
+  ease: "easeOut",
+  duration: 0.2,
 }
 
 const BottomSheet: FC<BottomSheetProps> = ({
   open,
   onClose,
-  snapPoints,
-  label,
-  disableDrag = true,
   children,
-  ...rest
+  className,
+  overlayClassName,
 }) => {
-  const sheetState = useOverlayTriggerState({})
-  useEffect(() => {
-    if (open) sheetState.open()
-    else sheetState.close()
-  }, [sheetState, open])
   return (
-    <Sheet
-      {...rest}
-      isOpen={sheetState.isOpen}
-      onClose={onClose}
-      snapPoints={snapPoints}
-      disableDrag={disableDrag}
-      className="container"
-    >
-      <OverlayProvider>
-        <FocusScope contain autoFocus restoreFocus>
-          <A11ySheetContent
-            state={sheetState}
-            onClose={onClose}
-            label={label ?? ""}
+    <AnimatePresence>
+      {open && (
+        <Dialog
+          open={open}
+          className="fixed inset-0 z-10 overflow-hidden"
+          onClose={onClose}
+        >
+          <motion.div
+            initial={{
+              opacity: 0,
+            }}
+            animate={{
+              opacity: 1,
+              transition: ENTER_TRANSITION,
+            }}
+            exit={{
+              opacity: 0,
+              transition: EXIT_TRANSITION,
+            }}
           >
-            {children}
-          </A11ySheetContent>
-        </FocusScope>
-      </OverlayProvider>
-    </Sheet>
+            <Dialog.Overlay
+              className={`fixed inset-0 bg-black bg-opacity-10 ${overlayClassName}`}
+            />
+          </motion.div>
+          <div className="flex flex-col justify-end items-center h-screen">
+            <motion.div
+              initial={{
+                translateY: "100%",
+              }}
+              animate={{
+                translateY: 0,
+                transition: ENTER_TRANSITION,
+              }}
+              exit={{
+                translateY: "100%",
+                transition: EXIT_TRANSITION,
+              }}
+              className={`container overflow-hidden bg-white shadow-xl rounded-2xl h-[95%] ${className}`}
+            >
+              {children}
+            </motion.div>
+          </div>
+        </Dialog>
+      )}
+    </AnimatePresence>
   )
-}
-
-const A11ySheetContent: FC<{
-  state: OverlayTriggerState
-  onClose: () => void
-  label?: string
-}> = ({ state, onClose, children }) => {
-  const a11yProps = useA11ySheet(state, onClose)
-
-  return (
-    <>
-      <Sheet.Container
-        style={{ outline: "none", boxShadow: "none" }}
-        {...a11yProps}
-      >
-        <Sheet.Content onViewportBoxUpdate={() => undefined}>
-          {children}
-        </Sheet.Content>
-      </Sheet.Container>
-      <Sheet.Backdrop
-        onViewportBoxUpdate={() => undefined}
-        onTap={onClose}
-        style={{ cursor: "auto" }}
-      />
-    </>
-  )
-}
-
-const useA11ySheet = (
-  state: OverlayTriggerState,
-  onClose: () => void,
-  label?: string
-) => {
-  const ref = useRef<HTMLDivElement>(null)
-
-  const { dialogProps } = useDialog(
-    { "aria-label": label ?? "Bottom sheet" },
-    ref
-  )
-  const { overlayProps } = useOverlay(
-    { onClose: onClose, isOpen: true, isDismissable: true },
-    ref
-  )
-
-  usePreventScroll()
-  const { modalProps } = useModal()
-
-  const result = {
-    ref,
-    ...overlayProps,
-    ...dialogProps,
-    ...modalProps,
-    // eslint-disable-next-line
-  } as any // HACK: fix type conflicts with Framer Motion
-
-  return result
 }
 
 export default BottomSheet

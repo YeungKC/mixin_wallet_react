@@ -1,7 +1,11 @@
 // eslint-disable-next-line
 module.exports = {
   mode: "jit",
-  purge: ["./public/**/*.html", "./src/**/*.{js,jsx,ts,tsx,vue}"],
+  purge: [
+    "./public/**/*.html",
+    "./src/**/*.{js,jsx,ts,tsx}",
+    "./src/**/**/*.{js,jsx,ts,tsx}",
+  ],
   darkMode: false, // or 'media' or 'class'
   theme: {
     screens: {

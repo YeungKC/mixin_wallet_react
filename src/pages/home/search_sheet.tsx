@@ -33,7 +33,7 @@ const SearchSheet = () => {
   }, [navigate, closeSheet])
 
   return (
-    <BottomSheet open={open} onClose={onClose}>
+    <BottomSheet open={open} onClose={onClose} className="">
       <SearchSheetPage />
     </BottomSheet>
   )

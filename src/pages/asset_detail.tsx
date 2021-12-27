@@ -157,7 +157,7 @@ const ListItem: FC<
           precision={"crypto"}
           leading={isPositive ? "+" : ""}
           className={`font-semibold ${
-            isPositive ? "text-green-500" : "text-red-500"
+            isPositive ? "text-green-400" : "text-red-400"
           }`}
         />
         <p>{data.asset?.symbol}</p>

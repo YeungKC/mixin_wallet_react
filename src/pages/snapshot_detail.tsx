@@ -82,7 +82,7 @@ const Value: FC<
           value={data.amount}
           precision={"crypto"}
           className={`font-semibold text-2xl break-all text-center ${
-            isPositive ? "text-green-500" : "text-red-500"
+            isPositive ? "text-green-400" : "text-red-400"
           }`}
         />
         <p className="self-end mb-1">{data.asset?.symbol}</p>
