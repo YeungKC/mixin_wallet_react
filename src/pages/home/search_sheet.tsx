@@ -97,7 +97,7 @@ const InitAssets: FC<{ scrollElement?: Element }> = ({ scrollElement }) => {
         rowHeight={72}
         rowRenderer={({ index, style }) => (
           <ListItem
-            key={`top-${data[index].asset_id}`}
+            key={data[index].asset_id}
             style={style}
             asset={data[index]}
           />
