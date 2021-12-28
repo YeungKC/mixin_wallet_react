@@ -15,7 +15,7 @@ const ENTER_TRANSITION = {
 }
 const EXIT_TRANSITION = {
   ease: "easeOut",
-  duration: 0.2,
+  duration: 0.25,
 }
 
 const BottomSheet: FC<BottomSheetProps> = ({
@@ -50,7 +50,7 @@ const BottomSheet: FC<BottomSheetProps> = ({
               className={`fixed inset-0 bg-black bg-opacity-10 ${overlayClassName}`}
             />
           </motion.div>
-          <div className="flex flex-col justify-end items-center h-screen">
+          <div className="flex flex-col justify-end md:justify-center items-center h-screen">
             <motion.div
               initial={{
                 translateY: "100%",
@@ -63,7 +63,7 @@ const BottomSheet: FC<BottomSheetProps> = ({
                 translateY: "100%",
                 transition: EXIT_TRANSITION,
               }}
-              className={`container overflow-hidden bg-white shadow-xl rounded-2xl h-[95%] ${className}`}
+              className={`container overflow-hidden bg-white shadow-xl rounded-t-2xl md:rounded-2xl h-[95%] ${className}`}
             >
               {children}
             </motion.div>
