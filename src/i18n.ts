@@ -36,4 +36,11 @@ i18n
     },
   })
 
+const setLanguage = (language: string) =>
+  (document.documentElement.lang = language)
+
+setLanguage(i18n.language)
+
+i18n.on("languageChanged", setLanguage)
+
 export default i18n
