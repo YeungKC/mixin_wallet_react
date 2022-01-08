@@ -4,6 +4,7 @@ import { EntitySchema } from "typeorm"
 import { AssetExtra } from "./asset_extra"
 
 export interface AssetSchema extends Asset {
+  reserve?: string
   chain?: Asset
   extra?: AssetExtra
   fiat?: ExchangeRate
@@ -32,6 +33,7 @@ export const AssetEntity = new EntitySchema<AssetSchema>({
     fee: { type: String, nullable: true },
     liquidity: { type: String, nullable: true },
     snapshots_count: { type: Number, nullable: true },
+    reserve: { type: String, nullable: true },
   },
   indices: [
     { columns: (e) => [e.chain_id] },

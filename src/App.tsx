@@ -4,7 +4,7 @@ import "reflect-metadata"
 
 import { FC, lazy, Suspense } from "react"
 import { QueryClientProvider } from "react-query"
-import { HashRouter, Route, Routes } from "react-router-dom"
+import { HashRouter, RouteObject, useRoutes } from "react-router-dom"
 import { ToastContainer } from "react-toastify"
 import { RecoilRoot } from "recoil"
 import RecoilNexus from "recoil-nexus"
@@ -29,40 +29,52 @@ const Auth = lazy(() => import("./pages/auth"))
 const Home = lazy(() => import("./pages/home"))
 const AssetDetail = lazy(() => import("./pages/asset_detail"))
 const SnapshotDetail = lazy(() => import("./pages/snapshot_detail"))
+const AssetDeposit = lazy(() => import("./pages/asset_deposit"))
 
 function Content() {
+  const routes = useRoutes([
+    {
+      path: "/auth",
+      element: <Auth />,
+    },
+    { path: "*", element: <div>404 Not found</div> },
+    ...[
+      {
+        path: "/",
+        children: [
+          { index: true, element: <Home /> },
+          {
+            path: "snapshot/:snapshotId",
+            children: [{ index: true, element: <SnapshotDetail /> }],
+          },
+          {
+            path: "/asset/:assetId",
+            children: [
+              { index: true, element: <AssetDetail /> },
+              { path: "deposit", element: <AssetDeposit /> },
+            ],
+          },
+        ],
+      },
+    ].map((e) => {
+      const wrapper = (routeObject: RouteObject) => {
+        if (routeObject.element) {
+          routeObject.element = (
+            <RequireAuthAndDatabase>
+              {routeObject.element}
+            </RequireAuthAndDatabase>
+          )
+        }
+        routeObject.children?.forEach((routeObject) => wrapper(routeObject))
+      }
+      wrapper(e)
+      return e
+    }),
+  ])
   return (
     <div>
       <UpdateProfile />
-      <Suspense fallback={<LoadingPage />}>
-        <Routes>
-          <Route path="/auth" element={<Auth />} />
-          <Route
-            path="/snapshot/:snapshotId"
-            element={
-              <RequireAuthAndDatabase>
-                <SnapshotDetail />
-              </RequireAuthAndDatabase>
-            }
-          />
-          <Route
-            path="/asset/:assetId"
-            element={
-              <RequireAuthAndDatabase>
-                <AssetDetail />
-              </RequireAuthAndDatabase>
-            }
-          />
-          <Route
-            path="/"
-            element={
-              <RequireAuthAndDatabase>
-                <Home />
-              </RequireAuthAndDatabase>
-            }
-          />
-        </Routes>
-      </Suspense>
+      <Suspense fallback={<LoadingPage />}>{routes}</Suspense>
     </div>
   )
 }

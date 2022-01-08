@@ -1,7 +1,7 @@
 import { authorizeToken, Client } from "mixin-node-sdk"
 import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
 
 import authBackground from "../assets/auth_background.webp"
@@ -11,6 +11,7 @@ import {
   useSetProfileState,
   useTokenState,
 } from "../recoil/profile"
+import { useQueryParams } from "../util/router"
 import { LoadingPage } from "./loading"
 
 const Auth = () => {
@@ -20,8 +21,7 @@ const Auth = () => {
 
   const location = useLocation()
   const navigate = useNavigate()
-  const [params] = useSearchParams()
-  const code = params.get("code")
+  const [code] = useQueryParams("code")
 
   useEffect(() => {
     const navigateBack = async () => {

@@ -1,3 +1,5 @@
+const initSqlJs = require("sql.js")
+
 import localforage from "localforage"
 import { FC, useEffect, useMemo, useState } from "react"
 import { createConnection, getConnection } from "typeorm"
@@ -10,8 +12,6 @@ import { FiatEntity } from "../store/database/entity/fiat"
 import { SnaphostEntity } from "../store/database/entity/snapshot"
 import { UserEntity } from "../store/database/entity/user"
 import sqlWasm from "./sql_wasm"
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const initSqlJs = require("sql.js")
 
 const DatabaseInit: FC = ({ children }) => {
   const initialized = useMemo(() => {

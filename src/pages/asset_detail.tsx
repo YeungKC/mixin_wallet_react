@@ -88,9 +88,9 @@ const ActionBar: FC<HTMLAttributes<HTMLDivElement>> = ({ className }) => {
     <div
       className={`w-full flex items-center justify-center mb-4 h-10 px-8 ${className}`}
     >
-      <ActionBarButton name={t("send")} className="rounded-l-lg" />
-      <ActionBarButton name={t("receive")} />
-      <ActionBarButton name={t("swap")} className="rounded-r-lg" />
+      <ActionBarButton name={t("send")} to={{}} className="rounded-l-lg" />
+      <ActionBarButton name={t("receive")} to={"deposit"} />
+      <ActionBarButton name={t("swap")} to={{}} className="rounded-r-lg" />
     </div>
   )
 }

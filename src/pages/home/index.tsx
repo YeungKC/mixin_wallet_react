@@ -8,7 +8,6 @@ import {
   useMemo,
 } from "react"
 import { useTranslation } from "react-i18next"
-import { useSearchParams } from "react-router-dom"
 import { Cell, Pie, PieChart } from "recharts"
 
 import amplitude from "../../assets/amplitude.svg"
@@ -19,8 +18,7 @@ import search from "../../assets/search.svg"
 import setting from "../../assets/setting.svg"
 import ActionBarButton from "../../component/action_bar_button"
 import AppBar from "../../component/app_bar"
-import AssetIcon from "../../component/asset_icon"
-import AssetPriceAndChange from "../../component/asset_price_and_change"
+import AssetItem from "../../component/asset_item"
 import Avatar from "../../component/avatar"
 import Button from "../../component/common/button"
 import FormatNumber from "../../component/common/format_number"
@@ -32,12 +30,12 @@ import {
   useProfileValue,
 } from "../../recoil/profile"
 import { assetSortType, useAssets, useUpdateAssets } from "../../service/hook"
-import { AssetSchema } from "../../store/database/entity/asset"
 import { bigAdd, bigDiv, bigMul, bigSub, toRounding } from "../../util/big"
-import { useSetQueryString } from "../../util/router"
+import { useQueryParams, useSetQueryString } from "../../util/router"
 import { LoadingPage } from "../loading"
 
 const SearchSheet = lazy(() => import("./search_sheet"))
+const SendOrReceiveSheet = lazy(() => import("./send_or_receive_sheet"))
 
 const Home = () => {
   const { data, isLoading } = useAssets()
@@ -60,6 +58,18 @@ const Home = () => {
       </div>
       <Suspense fallback={null}>
         <SearchSheet />
+      </Suspense>
+      <Suspense fallback={null}>
+        <SendOrReceiveSheet
+          searchKey="sendSearchSheet"
+          to={(asset) => `/withdrawal/${asset.asset_id}`}
+        />
+      </Suspense>
+      <Suspense fallback={null}>
+        <SendOrReceiveSheet
+          searchKey="receiveSearchSheet"
+          to={(asset) => `/asset/${asset.asset_id}/deposit`}
+        />
       </Suspense>
     </>
   )
@@ -251,21 +261,33 @@ const ChartItem: FC<{ name: string; percent: number; color: string }> = ({
 
 const ActionBar: FC<HTMLAttributes<HTMLDivElement>> = ({ className }) => {
   const [t] = useTranslation()
+  const openSendSearchSheet = useSetQueryString({
+    sendSearchSheet: undefined,
+  })
+  const openReceiveSearchSheet = useSetQueryString({
+    receiveSearchSheet: undefined,
+  })
   return (
     <div
       className={`w-full flex items-center justify-center mb-4 h-10 px-8 ${className}`}
     >
-      <ActionBarButton name={t("send")} className="rounded-l-lg" />
-      <ActionBarButton name={t("receive")} />
-      <ActionBarButton name={t("buy")} />
-      <ActionBarButton name={t("swap")} className="rounded-r-lg" />
+      <ActionBarButton
+        name={t("send")}
+        to={{ search: openSendSearchSheet }}
+        className="rounded-l-lg"
+      />
+      <ActionBarButton
+        name={t("receive")}
+        to={{ search: openReceiveSearchSheet }}
+      />
+      <ActionBarButton name={t("buy")} to={{}} />
+      <ActionBarButton name={t("swap")} to={{}} className="rounded-r-lg" />
     </div>
   )
 }
 
 const _List = memo(() => {
-  const [params] = useSearchParams()
-  const sortValue = params.get("sort")
+  const [sortValue] = useQueryParams("sort")
   const sort = useMemo(() => {
     if (
       sortValue === "amount" ||
@@ -285,10 +307,11 @@ const _List = memo(() => {
         rowCount={data.length}
         rowHeight={72}
         rowRenderer={({ index, style }) => (
-          <ListItem
+          <AssetItem
             key={data[index].asset_id}
             style={style}
             asset={data[index]}
+            to={`/asset/${data[index].asset_id}`}
           />
         )}
       />
@@ -335,40 +358,5 @@ const ListHeader: FC<{ sort?: typeof assetSortType }> = memo(({ sort }) => {
     </div>
   )
 })
-
-const ListItem: FC<{ asset: AssetSchema } & HTMLAttributes<HTMLAnchorElement>> =
-  memo(({ asset, style }) => {
-    const currency = useMemo(
-      () => bigMul(asset.balance, asset.price_usd, asset.fiat?.rate ?? 0),
-      [asset.balance, asset.price_usd, asset.fiat?.rate]
-    )
-    const symbol = useProfileCurrencySymbolValue()
-    return (
-      <Button
-        to={`/asset/${asset.asset_id}`}
-        className="p-4 flex gap-3"
-        style={style}
-      >
-        <AssetIcon
-          assetIconUrl={asset.icon_url}
-          chainIconUrl={asset.chain?.icon_url}
-          className="flex-shrink-0"
-        />
-        <div className="flex-grow flex flex-col justify-between truncate">
-          <div className="flex font-semibold text-sm gap-1">
-            <FormatNumber value={asset.balance} precision={"crypto"} />
-            {asset.symbol}
-          </div>
-          <FormatNumber
-            className="text-xs text-gray-400"
-            value={currency}
-            precision={"fiat"}
-            leading={symbol}
-          />
-        </div>
-        <AssetPriceAndChange asset={asset} className="" />
-      </Button>
-    )
-  })
 
 export default Home

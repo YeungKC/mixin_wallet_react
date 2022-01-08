@@ -15,3 +15,11 @@ export const useSetQueryString = (obj: {
     return p.toString()
   }, [obj, params])
 }
+
+export const useQueryParams = (key: string | string[]) => {
+  const [params] = useSearchParams()
+  return useMemo(() => {
+    if (typeof key === "string") return [params.get(key)]
+    return key.map((key) => params.get(key))
+  }, [params, key])
+}

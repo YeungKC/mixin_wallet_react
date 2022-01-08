@@ -3693,6 +3693,15 @@ cli-highlight@^2.1.11:
     parse5-htmlparser2-tree-adapter "^6.0.0"
     yargs "^16.0.0"
 
+clipboard@^2.0.8:
+  version "2.0.8"
+  resolved "https://registry.yarnpkg.com/clipboard/-/clipboard-2.0.8.tgz#ffc6c103dd2967a83005f3f61976aa4655a4cdba"
+  integrity sha512-Y6WO0unAIQp5bLmk1zdThRhgJt/x3ks6f30s3oE3H1mgIEU33XyQjEf8gsf6DxC7NPX8Y1SsNWjUjL/ywLnnbQ==
+  dependencies:
+    good-listener "^1.2.2"
+    select "^1.1.2"
+    tiny-emitter "^2.0.0"
+
 cliui@^5.0.0:
   version "5.0.0"
   resolved "https://registry.npmjs.org/cliui/-/cliui-5.0.0.tgz"
@@ -4593,6 +4602,11 @@ delayed-stream@~1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/delayed-stream/-/delayed-stream-1.0.0.tgz"
   integrity sha1-3zrhmayt+31ECqrgsp4icrJOxhk=
+
+delegate@^3.1.2:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/delegate/-/delegate-3.2.0.tgz#b66b71c3158522e8ab5744f720d8ca0c2af59166"
+  integrity sha512-IofjkYBZaZivn0V8nnsMJGBr4jVLxHDheKSW88PyxS5QC4Vo9ZbZVvhzlSxY87fVq3STR6r+4cGepyHkcWOQSw==
 
 depd@~1.1.2:
   version "1.1.2"
@@ -6075,6 +6089,13 @@ globby@^6.1.0:
     object-assign "^4.0.1"
     pify "^2.0.0"
     pinkie-promise "^2.0.0"
+
+good-listener@^1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/good-listener/-/good-listener-1.2.2.tgz#d53b30cdf9313dffb7dc9a0d477096aa6d145c50"
+  integrity sha1-1TswzfkxPf+33JoNR3CWqm0UXFA=
+  dependencies:
+    delegate "^3.1.2"
 
 graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.2.0, graceful-fs@^4.2.4:
   version "4.2.6"
@@ -9999,6 +10020,15 @@ prompts@2.4.0, prompts@^2.0.1:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
 
+prop-types@^15.6.0:
+  version "15.8.0"
+  resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.8.0.tgz#d237e624c45a9846e469f5f31117f970017ff588"
+  integrity sha512-fDGekdaHh65eI3lMi5OnErU6a8Ighg2KjcjQxO7m8VHyWjcPyj5kiOgV1LQDOOOgVy3+5FgjXvdSSX7B8/5/4g==
+  dependencies:
+    loose-envify "^1.4.0"
+    object-assign "^4.1.1"
+    react-is "^16.13.1"
+
 prop-types@^15.6.2, prop-types@^15.7.2:
   version "15.7.2"
   resolved "https://registry.npmjs.org/prop-types/-/prop-types-15.7.2.tgz"
@@ -10092,6 +10122,20 @@ q@^1.1.2:
   version "1.5.1"
   resolved "https://registry.npmjs.org/q/-/q-1.5.1.tgz"
   integrity sha1-fjL3W0E4EpHQRhHxvxQQmsAGUdc=
+
+qr.js@0.0.0:
+  version "0.0.0"
+  resolved "https://registry.yarnpkg.com/qr.js/-/qr.js-0.0.0.tgz#cace86386f59a0db8050fa90d9b6b0e88a1e364f"
+  integrity sha1-ys6GOG9ZoNuAUPqQ2baw6IoeNk8=
+
+qrcode.react@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/qrcode.react/-/qrcode.react-1.0.1.tgz#2834bb50e5e275ffe5af6906eff15391fe9e38a5"
+  integrity sha512-8d3Tackk8IRLXTo67Y+c1rpaiXjoz/Dd2HpcMdW//62/x8J1Nbho14Kh8x974t9prsLHN6XqVgcnRiBGFptQmg==
+  dependencies:
+    loose-envify "^1.4.0"
+    prop-types "^15.6.0"
+    qr.js "0.0.0"
 
 qs@6.7.0:
   version "6.7.0"
@@ -10247,7 +10291,7 @@ react-i18next@^11.14.3:
     "@babel/runtime" "^7.14.5"
     html-parse-stringify "^3.0.1"
 
-react-is@^16.10.2, react-is@^16.8.1:
+react-is@^16.10.2, react-is@^16.13.1, react-is@^16.8.1:
   version "16.13.1"
   resolved "https://registry.npmjs.org/react-is/-/react-is-16.13.1.tgz"
   integrity sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==
@@ -11044,6 +11088,11 @@ select-hose@^2.0.0:
   version "2.0.0"
   resolved "https://registry.npmjs.org/select-hose/-/select-hose-2.0.0.tgz"
   integrity sha1-Yl2GWPhlr0Psliv8N2o3NZpJlMo=
+
+select@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/select/-/select-1.1.2.tgz#0e7350acdec80b1108528786ec1d4418d11b396d"
+  integrity sha1-DnNQrN7ICxEIUoeG7B1EGNEbOW0=
 
 selfsigned@^1.10.8:
   version "1.10.8"
@@ -11979,6 +12028,11 @@ timsort@^0.3.0:
   version "0.3.0"
   resolved "https://registry.npmjs.org/timsort/-/timsort-0.3.0.tgz"
   integrity sha1-QFQRqOfmM5/mTbmiNN4R3DHgK9Q=
+
+tiny-emitter@^2.0.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/tiny-emitter/-/tiny-emitter-2.1.0.tgz#1d1a56edfc51c43e863cbb5382a72330e3555423"
+  integrity sha512-NB6Dk1A9xgQPMoGqC5CVXn123gWyte215ONT5Pp5a0yt4nlEoO1ZWeCwpncaekPHXO60i47ihFnZPiRPjRMq4Q==
 
 tmp@^0.2.1:
   version "0.2.1"

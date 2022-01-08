@@ -91,10 +91,7 @@ export const useSnapshotsAndUpdate = ({
         .getMany()
     },
     {
-      getNextPageParam: (lastPage) => {
-        if (lastPage.length < limit) return undefined
-        return lastPage[lastPage.length - 1]?.created_at
-      },
+      getNextPageParam: (lastPage) => lastPage[lastPage.length - 1]?.created_at,
     }
   )
   const { mutateAsync, isLoading } = useUpdateAssetSnapshots()
@@ -178,7 +175,7 @@ export const useTopAssetsAndUpdate = () => {
 
 export const useSearchAssets = (query: string | null | undefined) => {
   const { data, isLoading } = useQuery(["asset", query], () => {
-    if (!query) return []
+    if (!query) return undefined
     return service
       .assetResults()
       .orWhere(`asset.symbol LIKE '%${query}%'`)
