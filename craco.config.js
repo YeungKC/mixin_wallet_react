@@ -90,7 +90,8 @@ module.exports = {
         new HtmlWebpackPlugin(),
         new PrefetchPolyfillPlugin({ ms: 2000 }),
         new BundleAnalyzerPlugin({
-          analyzerMode: isEnvProduction ? "server" : "disabled",
+          // analyzerMode: "server",
+          analyzerMode: "disabled",
         }),
       ],
     },
