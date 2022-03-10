@@ -4,7 +4,7 @@ import "reflect-metadata"
 
 import { FC, lazy, Suspense } from "react"
 import { QueryClientProvider } from "react-query"
-import { HashRouter, RouteObject, useRoutes } from "react-router-dom"
+import { BrowserRouter, RouteObject, useRoutes } from "react-router-dom"
 import { ToastContainer } from "react-toastify"
 import { RecoilRoot } from "recoil"
 import RecoilNexus from "recoil-nexus"
@@ -19,7 +19,7 @@ const Providers: FC = ({ children }) => {
     <RecoilRoot>
       <QueryClientProvider client={queryClient}>
         <RecoilNexus />
-        <HashRouter>{children}</HashRouter>
+        <BrowserRouter>{children}</BrowserRouter>
       </QueryClientProvider>
     </RecoilRoot>
   )
