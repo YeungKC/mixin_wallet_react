@@ -14,6 +14,10 @@ import {
 import { useQueryParams } from "../util/router"
 import { LoadingPage } from "./loading"
 
+const toAuth = () => {
+  location.href = `https://mixin-www.zeromesh.net/oauth/authorize?client_id=${process.env.REACT_APP_CLIENT_ID}&scope=PROFILE:READ+ASSETS:READ+CONTACTS:READ+SNAPSHOTS:READ&response_type=code`
+}
+
 const Auth = () => {
   const { t } = useTranslation()
   const [token, setToken] = useTokenState()
@@ -97,12 +101,12 @@ const _Auth = () => {
       </div>
       <p className="text-2xl font-medium mb-4">{t("mixinWallet")}</p>
       <p className="px-8 text-center text-gray-500 mb-14">{t("authSlogan")}</p>
-      <a
+      <button
         className="rounded-full bg-black text-white px-6 py-4 mb-6"
-        href={`https://mixin-www.zeromesh.net/oauth/authorize?client_id=${process.env.REACT_APP_CLIENT_ID}&scope=PROFILE:READ+ASSETS:READ+CONTACTS:READ+SNAPSHOTS:READ&response_type=code`}
+        onClick={toAuth}
       >
         {t("authorize")}
-      </a>
+      </button>
       <p className="text-sm text-gray-300 px-12">{t("authHint")}</p>
     </div>
   )
