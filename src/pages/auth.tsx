@@ -1,5 +1,4 @@
 import { authorizeToken, Client } from "mixin-node-sdk"
-import Mixin from "mixin-web-sdk/dist"
 import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { useLocation, useNavigate } from "react-router-dom"
@@ -14,18 +13,6 @@ import {
 } from "../recoil/profile"
 import { useQueryParams } from "../util/router"
 import { LoadingPage } from "./loading"
-
-const toAuth = () => {
-  Mixin.toAuthPage({
-    scope: {
-      profile: true,
-      assets: true,
-      contacts: true,
-      snapshots: true,
-    },
-    client_id: process.env.REACT_APP_CLIENT_ID,
-  })
-}
 
 const Auth = () => {
   const { t } = useTranslation()
@@ -112,7 +99,7 @@ const _Auth = () => {
       <p className="px-8 text-center text-gray-500 mb-14">{t("authSlogan")}</p>
       <a
         className="rounded-full bg-black text-white px-6 py-4 mb-6"
-        onClick={toAuth}
+        href={`https://mixin-www.zeromesh.net/oauth/authorize?client_id=${process.env.REACT_APP_CLIENT_ID}&scope=PROFILE:READ+ASSETS:READ+CONTACTS:READ+SNAPSHOTS:READ&response_type=code`}
       >
         {t("authorize")}
       </a>

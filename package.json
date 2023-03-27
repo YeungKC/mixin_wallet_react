@@ -23,7 +23,6 @@
     "i18next-browser-languagedetector": "^6.1.2",
     "localforage": "^1.10.0",
     "mixin-node-sdk": "^3.0.14",
-    "mixin-web-sdk": "^1.0.5",
     "postcss": "^7",
     "qrcode.react": "^1.0.1",
     "react": "^17.0.2",
