@@ -15,7 +15,9 @@ import { useQueryParams } from "../util/router"
 import { LoadingPage } from "./loading"
 
 const toAuth = () => {
-  location.href = `https://mixin-www.zeromesh.net/oauth/authorize?client_id=${process.env.REACT_APP_CLIENT_ID}&scope=PROFILE:READ+ASSETS:READ+CONTACTS:READ+SNAPSHOTS:READ&response_type=code`
+  location.replace(
+    `https://mixin-www.zeromesh.net/oauth/authorize?client_id=${process.env.REACT_APP_CLIENT_ID}&scope=PROFILE:READ+ASSETS:READ+CONTACTS:READ+SNAPSHOTS:READ&response_type=code`
+  )
 }
 
 const Auth = () => {
