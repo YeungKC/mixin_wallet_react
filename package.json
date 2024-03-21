@@ -40,7 +40,7 @@
     "reflect-metadata": "^0.1.13",
     "sql.js": "^1.6.2",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat",
-    "typeorm": "^0.2.41",
+    "typeorm": "^0.3.0",
     "typescript": "^4.1.2",
     "web-vitals": "^1.0.1"
   },
